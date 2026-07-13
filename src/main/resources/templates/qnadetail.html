@@ -1,0 +1,280 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+<meta charset="UTF-8">
+<title>QnA 상세 보기</title>
+
+<link href="/css/main.css" rel="stylesheet">
+<link href="/css/app.css" rel="stylesheet">
+
+<style>
+/* 전체 배경 및 정렬 */
+body {
+    background: #f5f7fb;
+    font-family: Arial, sans-serif;
+    margin: 0;
+    padding: 0;
+}
+
+.detailQna {
+    width: 850px; 
+    margin: 80px auto;
+}
+
+/* 상단 헤더 */
+.detailQna-header {
+    margin-bottom: 25px;
+}
+
+.detailQna-header h1 {
+    font-size: 28px;
+    font-weight: bold;
+    color: #222;
+}
+
+.detailQna-header a {
+    text-decoration: none;
+    color: #222;
+}
+
+/* 기본 게시글 카드 박스 */
+.card-detailQna {
+    background: white;
+    padding: 40px;
+    border-radius: 12px;
+    box-shadow: 0 4px 15px rgba(0,0,0,0.05);
+    box-sizing: border-box;
+    margin-bottom: 30px; 
+}
+
+/* 메타 정보 (카테고리, 날짜 등) */
+.meta-info {
+    display: flex;
+    gap: 15px;
+    font-size: 14px;
+    color: #666;
+    border-bottom: 1px solid #eee;
+    padding-bottom: 15px;
+    margin-bottom: 20px;
+}
+
+.meta-category {
+    background: #e9ecef;
+    padding: 3px 10px;
+    border-radius: 20px;
+    color: #495057;
+    font-weight: bold;
+}
+
+/* 제목 및 본문 */
+.qna-title {
+    font-size: 24px;
+    font-weight: bold;
+    color: #111;
+    margin-bottom: 25px;
+}
+
+.qna-content {
+    font-size: 16px;
+    line-height: 1.6;
+    color: #333;
+    min-height: 200px;
+    white-space: pre-wrap; 
+}
+
+/* 버튼 영역 */
+.btn-area {
+    margin-top: 30px;
+    text-align: right;
+    border-top: 1px solid #eee;
+    padding-top: 20px;
+}
+
+.btn {
+    padding: 10px 25px;
+    border-radius: 6px;
+    text-decoration: none;
+    border: none;
+    cursor: pointer;
+    font-size: 14px;
+    font-weight: bold;
+    display: inline-block;
+    margin-left: 8px;
+}
+
+.btn-secondary { background: #6c757d; color: white; }
+.btn-success { background: #198754; color: white; }
+.btn-danger { background: #dc3545; color: white; }
+
+/* 답변(댓글) 섹션 스타일 */
+.reply-section {
+    background: white;
+    padding: 40px;
+    border-radius: 12px;
+    box-shadow: 0 4px 15px rgba(0,0,0,0.05);
+    box-sizing: border-box;
+}
+
+.reply-title {
+    font-size: 18px;
+    font-weight: bold;
+    color: #222;
+    margin-bottom: 20px;
+    border-left: 4px solid #ff3a5a;
+    padding-left: 10px;
+}
+
+/* 답변 리스트 아이템 */
+.reply-list {
+    list-style: none;
+    padding: 0;
+    margin: 0 0 30px 0;
+}
+
+.reply-item {
+    border-bottom: 1px dashed #eee;
+    padding: 15px 0;
+}
+
+.reply-item:last-child {
+    border-bottom: none;
+}
+
+.reply-meta {
+    display: flex;
+    justify-content: space-between;
+    font-size: 13px;
+    color: #777;
+    margin-bottom: 8px;
+}
+
+.reply-writer {
+    font-weight: bold;
+    color: #ff3a5a;
+}
+
+.reply-content {
+    font-size: 15px;
+    line-height: 1.5;
+    color: #444;
+    white-space: pre-wrap;
+}
+
+/* 답변 작성 폼 공간 */
+.reply-form-group {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+.reply-textarea {
+    width: 100%;
+    min-height: 100px;
+    padding: 15px;
+    border: 1px solid #dcdcdc;
+    border-radius: 8px;
+    font-size: 14px;
+    box-sizing: border-box;
+    resize: none;
+    outline: none;
+}
+
+.reply-textarea:focus {
+    border-color: #ff3a5a;
+}
+
+.reply-submit-area {
+    text-align: right;
+}
+
+.btn-reply {
+    background: #333333;
+    color: white;
+    padding: 12px 30px;
+    border-radius: 6px;
+    border: none;
+    font-size: 14px;
+    font-weight: bold;
+    cursor: pointer;
+}
+</style>
+</head>
+<body>
+
+<main>
+<div class="detailQna" th:if="${qna != null}">
+
+    <div class="detailQna-header">
+        <h1><a th:href="@{/qna}">QnA 게시판</a></h1>
+    </div>
+
+    <!-- 질문 본문 영역 카드 -->
+    <div class="card-detailQna">
+        <div class="meta-info">
+            <span class="meta-category" th:text="${qna.category}">카테고리</span>
+            <span th:text="${qna.createAt != null ? #temporals.format(qna.createAt, 'yyyy-MM-dd HH:mm') : ''}">작성일</span>
+        </div>
+        
+        <div class="qna-title" th:text="${qna.title}">여기에 글 제목이 나옵니다.</div>
+        
+        <div class="qna-content" th:text="${qna.content}">여기에 글 본문 내용이 나옵니다.</div>
+
+        <!-- 🟢 [위치 수정완료] 사용자가 등록한 이미지가 본문 내용 바로 밑에 이쁘게 등장합니다 -->
+        <div th:if="${qna.imageUrl != null && qna.imageUrl != ''}" style="margin-top: 25px; padding: 15px 0; border-top: 1px dashed #eee;">
+            <p style="font-weight: bold; color: #555; font-size: 14px; margin-bottom: 10px;">📸 첨부 사진</p>
+            <img th:src="${qna.imageUrl}" alt="QnA 첨부사진" style="max-width: 100%; max-height: 450px; border-radius: 8px; box-shadow: 0 4px 12px rgba(0,0,0,0.06); object-fit: contain;">
+        </div>
+
+        <div class="btn-area">
+            <a th:href="@{/qna}" class="btn btn-secondary">목록으로</a>
+            <a th:href="@{/qna/modify(id=${qna.id})}" class="btn btn-success">수정</a>
+            <a th:href="@{/qna/delete(id=${qna.id})}" class="btn btn-danger" onclick="return confirm('정말 이 문의 글을 삭제하시겠습니까?');">삭제</a>
+        </div>
+    </div>
+
+    <!-- 답변 처리 구역 -->
+    <div class="reply-section">
+        <div class="reply-title" th:text="'답변 (' + ${replies.size()} + ')'">답변 (0)</div>
+        
+       <ul class="reply-list" th:if="${not #lists.isEmpty(replies)}">
+            <li class="reply-item" th:each="reply : ${replies}">
+                <div style="display: flex; justify-content: space-between; align-items: flex-start;">
+                    <div style="flex: 1;">
+                        <div class="reply-meta">
+                            <span class="reply-writer" th:text="${reply.writer}">관리자</span>
+                            <span th:text="${reply.createAt != null ? #temporals.format(reply.createAt, 'yyyy-MM-dd HH:mm') : ''}">답변 시간</span>
+                        </div>
+                        <div class="reply-content" th:text="${reply.content}">답변 내용</div>
+                    </div>
+                    
+                    <div style="margin-left: 15px;">
+                        <a th:href="@{/qna/reply/delete(replyId=${reply.id}, qnaId=${qna.id})}" 
+                           style="color: #dc3545; text-decoration: none; font-size: 13px; font-weight: bold; border: 1px solid #dc3545; padding: 3px 8px; border-radius: 4px;"
+                           onclick="return confirm('이 답변을 삭제하시겠습니까?');">
+                           삭제
+                        </a>
+                    </div>
+                </div>
+            </li>
+        </ul>
+        
+        <p style="text-align: center; color: #999; font-size: 14px; margin-bottom: 30px;" th:if="${#lists.isEmpty(replies)}">
+            아직 등록된 답변이 없습니다. 빠른 시일 내에 답변을 드리겠습니다.
+        </p>
+
+        <form action="/qna/reply/write" method="post" class="reply-form-group">
+            <input type="hidden" name="qnaId" th:value="${qna.id}">
+            
+            <textarea name="content" class="reply-textarea" placeholder="답변 내용을 입력해 주세요. (관리자 전용)" required></textarea>
+            
+            <div class="reply-submit-area">
+                <button type="submit" class="btn-reply">답변 등록</button>
+            </div>
+        </form>
+    </div>
+
+</div>
+</main>
+
+</body>
+</html>

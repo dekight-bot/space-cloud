@@ -1,0 +1,165 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>SpaceCloud 최고관리자 - 예약 현황</title>
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons+Sharp" rel="stylesheet">
+    <style>
+        body { font-family: 'Malgun Gothic', sans-serif; margin: 0; padding: 0; background-color: #f1f3f5; display: flex; min-height: 100vh; }
+        aside { width: 260px; background-color: #1e1e2f; color: #fff; padding: 30px 20px; box-sizing: border-box; flex-shrink: 0; }
+        aside h2 { color: #ff3a5a; font-size: 22px; margin: 0 0 40px 0; font-weight: 800; text-align: center; }
+        aside ul { list-style: none; padding: 0; margin: 0; display: flex; flex-direction: column; gap: 10px; }
+        aside ul li a { display: flex; align-items: center; gap: 12px; color: #b3b3cc; text-decoration: none; padding: 12px 15px; border-radius: 8px; font-weight: bold; font-size: 15px; transition: all 0.2s; }
+        aside ul li a:hover, aside ul li a.active { background-color: #ff3a5a; color: #fff; }
+        
+        main { flex: 1; padding: 40px; box-sizing: border-box; }
+        header { margin-bottom: 30px; border-bottom: 2px solid #dee2e6; padding-bottom: 20px; }
+        header h1 { margin: 0; font-size: 26px; color: #222; }
+
+        /* 📊 상단 미니 요약 카드 대시보드 스타일 */
+        .analytics-container { display: flex; gap: 20px; margin-bottom: 30px; }
+        .card { background: #fff; padding: 20px 25px; border-radius: 12px; flex: 1; display: flex; align-items: center; gap: 15px; box-shadow: 0 4px 10px rgba(0,0,0,0.01); }
+        .card .icon-box { width: 50px; height: 50px; border-radius: 10px; display: flex; align-items: center; justify-content: center; color: white; }
+        .card.c1 .icon-box { background-color: #3b82f6; }
+        .card.c2 .icon-box { background-color: #10b981; }
+        .card.c3 .icon-box { background-color: #ef4444; }
+        .card .info h3 { margin: 0; font-size: 13px; color: #888; font-weight: bold; }
+        .card .info p { margin: 5px 0 0 0; font-size: 20px; font-weight: 800; color: #222; }
+        
+        /* 🧾 테이블 컨테이너 스타일 */
+        .table-container { background: #fff; padding: 25px; border-radius: 12px; box-shadow: 0 4px 10px rgba(0,0,0,0.02); }
+        table { width: 100%; border-collapse: collapse; font-size: 14px; text-align: left; }
+        th { padding: 15px 12px; border-bottom: 2px solid #dee2e6; color: #666; font-weight: bold; }
+        td { padding: 18px 12px; border-bottom: 1px solid #eee; color: #333; vertical-align: middle; }
+        
+        /* 🏷️ 예약 상태 배지 스타일 */
+        .status-badge { padding: 5px 12px; border-radius: 20px; font-size: 12px; font-weight: bold; display: inline-block; }
+        .status-ready { background-color: #e3f2fd; color: #0d47a1; }     /* 예약완료 / CONFIRMED */
+        .status-complete { background-color: #e8f5e9; color: #1b5e20; }  /* 이용완료 / COMPLETED */
+        .status-cancel { background-color: #ffebee; color: #c62828; }    /* 예약취소 / CANCELLED */
+        
+        .btn-cancel-action { background: #fff0f2; color: #ff3a5a; padding: 6px 12px; border-radius: 6px; font-size: 12px; font-weight: bold; border: none; cursor: pointer; text-decoration: none; transition: all 0.2s; }
+        .btn-cancel-action:hover { background: #ff3a5a; color: white; }
+    </style>
+</head>
+<body>
+
+    <!-- 좌측 사이드바 내비게이션 -->
+   		<aside>
+		    <h2>SpaceCloud Admin</h2>
+		    <ul>
+		        <li><a href="/admin/home"><span class="material-icons-sharp">dashboard</span> 대시보드 홈</a></li>
+		        <li><a href="/admin/users" class="active"><span class="material-icons-sharp">people</span> 회원 명단 관리</a></li>
+		        <li><a href="/admin/spaces"><span class="material-icons-sharp">room</span> 공간 등록/관리</a></li>
+		        <!-- 📢 내일 약속한 공지사항 메뉴 여기에 이식! -->
+		        <li><a href="/admin/notices"><span class="material-icons-sharp">campaign</span> 공지사항 관리</a></li>
+		        <li><a href="/admin/reservations"><span class="material-icons-sharp">receipt_long</span> 전체 예약 현황</a></li>
+		        <li><a href="/admin/qna"><span class="material-icons-sharp">question_answer</span> Q&A 답변 관리</a></li>
+		        <li><a href="/" style="margin-top: 50px; background: #333;"><span class="material-icons-sharp">logout</span> 사용자 홈 이동</a></li>
+		    </ul>
+		</aside>
+
+    <!-- 우측 메인 제어부 -->
+    <main>
+        <header>
+            <h1>🧾 전체 예약 및 대여 현황 모니터링</h1>
+        </header>
+
+        <!-- 📊 1. 상단 핵심 요약 미니 대시보드 구역 -->
+        <div class="analytics-container">
+            <div class="card c1">
+                <div class="icon-box"><span class="material-icons-sharp">receipt</span></div>
+                <div class="info">
+                    <h3>총 예약 건수</h3>
+                    <p th:text="${#lists.size(reservationList)} + '건'">0건</p>
+                </div>
+            </div>
+            <div class="card c2">
+                <div class="icon-box"><span class="material-icons-sharp">payments</span></div>
+                <div class="info">
+                    <h3>가동 중인 공간 수</h3>
+                    <p>플랫폼 활성화</p>
+                </div>
+            </div>
+            <div class="card c3">
+                <div class="icon-box"><span class="material-icons-sharp">gavel</span></div>
+                <div class="info">
+                    <h3>통제 구역 권한</h3>
+                    <p>최고 관리자 모드</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- 🧾 2. 실시간 예약 리스트 테이블 구역 -->
+        <div class="table-container">
+            <table>
+                <thead>
+                    <tr>
+                        <th style="width: 80px;">예약번호</th>
+                        <th style="width: 100px;">회원 고유ID</th>
+                        <th>이용 공간명</th>
+                        <th>예약 날짜 / 이용 시간</th>
+                        <th>이용 시간(총)</th>
+                        <th>총 결제 금액</th>
+                        <th>현재 상태</th>
+                        <th style="width: 110px; text-align: center;">강제 통제</th>
+                    </tr>
+                </thead>
+               <tbody>
+				    <!-- 🟢 타임리프로 예약 리스트 루프 가동 -->
+				    <tr th:each="res : ${reservationList}">
+				        <td th:text="${res.id}" style="color: #888; font-weight: bold;">101</td>
+				        <td th:text="'회원 ' + ${res.userId}" style="font-weight: 500; color:#555;">회원 1</td>
+				        <td th:text="${res.spaceName != null && res.spaceName != '' ? res.spaceName : '지정된 공간 없음'}" style="font-weight: bold; color: #222;">홍대 스터디룸</td>
+				        
+				        <!-- 날짜 및 시간 (뒤에 중복 텍스트 제거) -->
+				        <td>
+				            <span th:text="${res.reserveDate}" style="font-weight: bold;">2026-07-10</span>
+				            <br>
+				            <small th:text="'시작 시간: ' + ${res.startTime}" style="color: #666;"></small>
+				        </td>
+				        
+				        <!-- 이용 시간 (뒤에 '시간' 겹침 제거) -->
+				        <td th:text="${res.usageHours}">2시간</td>
+				        
+				        <!-- 총 결제 금액 (null원 예방 방어벽) -->
+				        <td th:text="${res.price != null && res.price != '' ? res.price : '0'} + '원'" style="font-weight: bold; color: #ff3a5a;">0원</td>
+				        
+				        <!-- 🏷️ 현재 상태 배지 구역 (중복 출력 원천 차단) -->
+				        <td>
+				            <!-- 1. 예약 완료 계열 -->
+				            <span th:if="${res.status == 'CONFIRMED' || res.status == 'confirmed' || res.status == '예약완료' || res.status == 'READY' || res.status == '이용 예정'}" 
+				                  class="status-badge status-ready" th:text="${res.status}">예약완료</span>
+				                  
+				            <!-- 2. 이용 완료 / 후기 완료 계열 -->
+				            <span th:if="${res.status == 'COMPLETED' || res.status == 'completed' || res.status == '이용완료' || res.status == '후기 작성 완료'}" 
+				                  class="status-badge status-complete" th:text="${res.status}">이용완료</span>
+				                  
+				            <!-- 3. 예약 취소 계열 -->
+				            <span th:if="${res.status == 'CANCELLED' || res.status == 'cancelled' || res.status == '예약취소' || res.status == '예약 취소'}" 
+				                  class="status-badge status-cancel" th:text="${res.status}">예약취소</span>
+				        </td>
+				        
+				        <!-- 🛠️ 강제 통제 버튼 구역 (상태 조건 완벽 동기화) -->
+				        <td style="text-align: center;">
+				            <!-- 이미 취소되었거나 완료된 건은 확실하게 버튼을 잠그고 텍스트 출력 -->
+				            <span th:if="${res.status == 'CANCELLED' || res.status == 'cancelled' || res.status == '예약취소' || res.status == '예약 취소'}" 
+				                  style="color:#aaa; font-size:12px; font-weight: bold;">취소완료</span>
+				                  
+				            <span th:if="${res.status == 'COMPLETED' || res.status == 'completed' || res.status == '이용완료' || res.status == '후기 작성 완료'}" 
+				                  class="status-badge" style="background-color: #f1f3f5; color: #666; font-size:12px;">취소불가</span>
+				
+				            <!-- 오직 정상 예약/이용 예정 상태일 때만 [강제취소] 버튼 노출 -->
+				            <a th:if="${res.status != 'CANCELLED' && res.status != 'cancelled' && res.status != '예약취소' && res.status != '예약 취소' && res.status != 'COMPLETED' && res.status != 'completed' && res.status != '이용완료' && res.status != '후기 작성 완료'}" 
+				               th:href="@{/admin/reservations/cancel(id=${res.id})}" 
+				               class="btn-cancel-action" 
+				               onclick="return confirm('최고 관리자 권한으로 해당 예약을 강제 취소하시겠습니까?');">강제취소</a>
+				        </td>
+				    </tr>
+				</tbody>
+            </table>
+        </div>
+    </main>
+
+</body>
+</html>

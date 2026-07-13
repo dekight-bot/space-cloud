@@ -1,0 +1,134 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>공간 상세 보기 - SpaceCloud</title>
+    <link href="/css/main.css" rel="stylesheet">
+    <link href="/css/app.css" rel="stylesheet">
+    <link href="/css/total.css" rel="stylesheet">
+    <link href="/css/font-awesome.min.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons|Material+Icons+Sharp|Material+Icons+Two+Tone" rel="stylesheet">
+</head>
+<body style="display: flex !important; flex-direction: column !important; min-height: 100vh !important; margin: 0 !important; background-color: #f8f9fa !important; font-family: 'Malgun Gothic', sans-serif !important;">
+
+    <!-- 헤더 -->
+    <div style="width: 100% !important; background-color: #ffffff !important; border-bottom: 1px solid #eef2f6 !important; position: fixed !important; top: 0 !important; left: 0 !important; z-index: 9999 !important; height: 70px !important;">
+        <div style="max-width: 1200px !important; margin: 0 auto !important; display: flex !important; justify-content: space-between !important; align-items: center !important; height: 70px !important; padding: 0 20px !important; box-sizing: border-box !important;">
+            <div style="display: flex !important; align-items: center !important; gap: 40px !important;">
+                <a href="/" style="font-size: 22px !important; font-weight: 800 !important; color: #ff3a5a !important; text-decoration: none !important;">SpaceCloud</a>
+                <div style="display: flex !important; gap: 25px !important;">
+                    <a href="/" style="text-decoration: none !important; color: #333 !important; font-weight: 600 !important;">Home</a>
+                    <a href="/qna" style="text-decoration: none !important; color: #333 !important; font-weight: 600 !important;">Q&A 게시판</a>
+                </div>
+            </div>
+            <div style="display: flex !important; align-items: center !important; gap: 20px !important; font-size: 14px !important;">
+                <th:block th:if="${session.loginUser == null}">
+                    <a href="/user/login" style="text-decoration: none; color: #666; font-weight: 600;">로그인</a>
+                    <a href="/user/join" style="text-decoration: none; color: #fff; background: #ff3a5a; padding: 8px 16px; border-radius: 20px; font-weight: 600;">회원가입</a>
+                </th:block>
+                <th:block th:if="${session.loginUser != null}">
+                    <span th:text="${session.loginUser.name} + '님 환영합니다!'" style="font-weight: 700;"></span>
+                    <a href="/user/logout" style="text-decoration: none; color: #ff3a5a; font-weight: 700;">로그아웃</a>
+                </th:block>
+            </div>
+        </div>
+    </div>
+    <div style="height: 100px !important;"></div>
+
+    <main style="max-width: 1200px !important; margin: 0 auto 40px auto !important; display: flex !important; gap: 30px !important; width: 95% !important;">
+        <section style="flex: 7 !important; display: flex !important; flex-direction: column !important; gap: 30px !important;">
+            
+            <!-- 갤러리 (확대 가능) -->
+            <div style="width: 100%; display: grid; grid-template-columns: repeat(2, 1fr); gap: 10px;">
+                <div th:each="img : ${space.images}" style="height: 250px; overflow: hidden; border-radius: 8px;">
+                    <img th:src="${img.imageUrl}" th:data-src="${img.imageUrl}" onclick="openModal(this.getAttribute('data-src'))" style="width: 100%; height: 100%; object-fit: cover; cursor: zoom-in;">
+                </div>
+            </div>
+
+            <div style="background-color: #ffffff !important; border-radius: 16px !important; padding: 35px !important; border: 1px solid #eef2f6 !important;">
+                <h1 th:text="${space?.name}" style="font-size: 28px !important; font-weight: bold !important; margin: 0 0 15px 0 !important;">공간 이름</h1>
+                <p th:text="${space?.description}" style="color: #666;"></p>
+            </div>
+
+            <!-- 유의사항 -->
+            <div style="background-color: #ffffff !important; border-radius: 16px !important; padding: 35px !important; border: 1px solid #eef2f6 !important;">
+                <h3><span class="material-icons-two-tone" style="color:#ff3a5a;">info</span> 공간 세부 소개</h3>
+                <p>대형 빔프로젝터, 마샬 스피커 완비. 배달 음식/주류 반입 허용.</p>
+                <h3 style="margin-top:20px;"><span class="material-icons-two-tone" style="color:#ff3a5a;">warning</span> 예약 유의사항</h3>
+                <ul style="padding-left: 20px;">
+                    <li>실내 절대 금연 구역입니다.</li>
+                    <li>퇴실 시 분리수거 및 소등 필수.</li>
+                    <li>기물 파손 시 전액 원상복구 비용 청구.</li>
+                </ul>
+            </div>
+
+            <!-- 리뷰 -->
+            <div th:if="${reviews != null}" style="padding: 20px; border-top: 2px solid #eee;">
+                <h3>이 공간의 이용 후기</h3>
+                <div th:each="review : ${reviews}" style="padding: 15px; border-bottom: 1px solid #f0f0f0;">
+                    <a th:href="@{/review/detail(id=${review.id})}" style="text-decoration: none; color: #333;">
+                        <div style="font-weight: bold;">별점: <span th:text="${review.rating}"></span></div>
+                        <div th:text="${#strings.abbreviate(review.content, 50)}"></div>
+                    </a>
+                </div>
+            </div>
+        </section>
+        
+        <!-- 예약 사이드바 -->
+        <aside style="flex: 3 !important; min-width: 320px !important;">
+            <div style="background: #fff; padding: 30px; border: 1px solid #eef2f6; border-radius: 16px; position: sticky; top: 110px;">
+                <h2 style="margin: 0 0 20px 0;">언제 빌릴까요?</h2>
+                <form action="/reservation/submit" method="post" style="display: flex; flex-direction: column; gap: 20px;">
+                    <input type="hidden" name="spaceId" th:value="${space?.id}">
+                    <input type="hidden" id="globalSpaceId" th:value="${space?.id}" />
+                    <input type="date" name="reserveDate" id="reserveDate" required style="width: 100%; height: 45px; border: 1px solid #ced4da; border-radius: 8px;">
+                    <select id="startTime" name="startTime" required style="width: 100%; height: 45px; border: 1px solid #ced4da; border-radius: 8px;">
+                        <option value="">시간 선택</option>
+                        <option value="10">10:00</option><option value="12">12:00</option>
+                        <option value="14">14:00</option><option value="16">16:00</option>
+                        <option value="18">18:00</option><option value="20">20:00</option>
+                    </select>
+                    <select name="usageHours" required style="width: 100%; height: 45px; border: 1px solid #ced4da; border-radius: 8px;">
+                        <option value="2">2시간</option><option value="3">3시간</option>
+                        <option value="4">4시간</option><option value="5">5시간</option>
+                    </select>
+                    <button type="submit" style="width: 100%; height: 50px; background: #ff3a5a; color: white; border: none; border-radius: 8px; font-weight: bold; cursor: pointer;">예약 신청하기</button>
+                </form>
+            </div>
+        </aside>
+    </main>
+
+    <!-- 모달 -->
+    <div id="imageModal" onclick="this.style.display='none'" style="display:none; position:fixed; z-index:9999; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.8); align-items:center; justify-content:center;">
+        <img id="modalImg" style="max-width:90%; max-height:80%; border-radius:8px;">
+    </div>
+
+    <script>
+        function openModal(src) {
+            document.getElementById("modalImg").src = src;
+            document.getElementById("imageModal").style.display = "flex";
+        }
+        
+        document.addEventListener("DOMContentLoaded", function() {
+            const dateInput = document.getElementById('reserveDate');
+            const timeSelect = document.getElementById('startTime');
+            const spaceId = document.getElementById('globalSpaceId')?.value;
+
+            if(dateInput && timeSelect && spaceId) {
+                dateInput.addEventListener("change", function() {
+                    fetch(`/reservation/booked-times?spaceId=${spaceId}&reserveDate=${this.value}`)
+                        .then(res => res.json())
+                        .then(bookedTimes => {
+                            timeSelect.querySelectorAll('option').forEach(opt => {
+                                if(!opt.value) return;
+                                const isBooked = bookedTimes.some(t => String(t).includes(opt.value));
+                                opt.disabled = isBooked;
+                                opt.innerText = isBooked ? opt.innerText.replace(" (예약마감)", "") + " (예약마감)" : opt.innerText.replace(" (예약마감)", "");
+                            });
+                        });
+                });
+            }
+        });
+    </script>
+</body>
+</html>

@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>공지사항 상세 - SpaceCloud</title>
+    <style>
+        body { font-family: 'Malgun Gothic', sans-serif; margin: 0; padding: 40px; background-color: #ffffff; }
+        .container { max-width: 800px; margin: 40px auto; padding: 0 20px; }
+        .notice-header { border-bottom: 1px solid #111111; padding-bottom: 15px; margin-bottom: 30px; }
+        .notice-title { font-size: 24px; font-weight: bold; color: #222; margin: 0 0 15px 0; }
+        .notice-info { font-size: 14px; color: #777; display: flex; gap: 20px; }
+        .notice-content { font-size: 16px; color: #333; line-height: 1.8; min-height: 300px; white-space: pre-wrap; word-break: break-all; }
+        .btn-box { border-top: 1px solid #eef2f6; padding-top: 30px; margin-top: 40px; text-align: center; }
+        .btn-list { display: inline-block; background-color: #ff3a5a; color: white; text-decoration: none; padding: 12px 30px; border-radius: 25px; font-weight: bold; font-size: 15px; transition: background 0.2s; }
+        .btn-list:hover { background-color: #e62243; }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    
+    <div class="notice-header">
+        <h1 class="notice-title" th:text="${notice.title}">공지사항 제목</h1>
+        
+        <div class="notice-info">
+            <span>📅 등록일: [[${notice.createdAt}]]</span>
+            <span>👀 조회수: [[${notice.views}]]</span>
+        </div>
+    </div>
+    
+    <div class="notice-content" th:text="${notice.content}">
+        공지사항 세부 내용 위치
+    </div>
+    
+    <div class="btn-box">
+        <a href="/notice/list" class="btn-list">목록으로</a>
+    </div>
+    
+</div>
+
+</body>
+</html>

@@ -1,0 +1,224 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+<meta charset="UTF-8">
+<title>QnA 작성</title>
+
+<link href="/css/main.css" rel="stylesheet">
+<link href="/css/app.css" rel="stylesheet">
+
+<style>
+/* 전체 배경 */
+body {
+    background: #f5f7fb;
+    font-family: Arial, sans-serif;
+    margin: 0;
+    padding: 0;
+}
+
+/* 컨테이너 */
+.writeQna {
+    width: 850px; /* 카드의 전체 가로 크기 */
+    margin: 80px auto;
+}
+
+/* 제목 */
+.writeQna-header1 {
+    margin-bottom: 25px;
+}
+
+.writeQna-header1 h1 {
+    font-size: 28px;
+    font-weight: bold;
+    color: #222;
+}
+
+.writeQna-header1 a {
+    text-decoration: none;
+    color: #222;
+}
+
+/* 카드 박스 */
+.card-writeQna {
+    background: white;
+    padding: 40px; /* 안쪽 여백을 넓혀서 시원하게 보이도록 설정 */
+    border-radius: 12px;
+    box-shadow: 0 4px 15px rgba(0,0,0,0.05);
+    box-sizing: border-box;
+}
+
+/* 1번째 줄: 카테고리와 비밀번호를 양옆으로 1:1 배치 */
+.form-row {
+    display: flex;
+    gap: 20px;
+    width: 100%;
+    box-sizing: border-box;
+    margin-bottom: 25px;
+}
+
+/* 개별 입력창 감싸는 박스 - ⭐️ 너비를 100% 채우고 왼쪽 정렬 고정 */
+.form-group {
+    width: 100%; /* 부모의 가로 폭을 꽉 채움 */
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start; /* 자식 요소들을 왼쪽 정렬 */
+    gap: 8px;
+    margin-bottom: 25px; /* 위아래 간격 일정하게 배치 */
+    box-sizing: border-box;
+}
+
+/* form-row 내부에 들어가는 form-group은 반반씩 나눠 갖도록 설정 */
+.form-row .form-group {
+    flex: 1;
+    margin-bottom: 0; /* 행 내부 여백은 row의 마진으로 대체 */
+}
+
+label {
+    font-size: 14px;
+    font-weight: bold;
+    color: #333;
+}
+
+/* input, textarea, select 요소가 카드를 넘지 않고 100% 꽉 차도록 설정 */
+input, textarea, select {
+    width: 100% !important; /* ⭐️ 가로 너비를 무조건 100%로 강제 확장 */
+    max-width: 100%;
+    padding: 14px;
+    border: 1px solid #dcdcdc;
+    border-radius: 8px;
+    font-size: 15px;
+    background-color: white;
+    box-sizing: border-box; /* 패딩 때문에 너비가 깨지는 현상 방지 */
+    outline: none;
+    transition: border-color 0.2s;
+}
+
+/* 포커스 되었을 때 파란색 테두리 효과 */
+input:focus, textarea:focus, select:focus {
+    border-color: #0d6efd;
+}
+
+/* select 박스 높이 맞춤 및 커스텀 화살표 */
+select {
+    height: 50px;
+    cursor: pointer;
+    -webkit-appearance: none;
+    -moz-appearance: none;
+    appearance: none;
+    background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='24' height='24' viewBox='0 0 24 24' fill='none' stroke='%23666' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'><polyline points='6 9 12 15 18 9'></polyline></svg>");
+    background-repeat: no-repeat;
+    background-position: right 15px center;
+    background-size: 16px;
+    padding-right: 40px;
+}
+
+/* textarea 높이를 충분히 주어 본문 입력창을 크게 확보 */
+textarea {
+    min-height: 280px;
+    resize: none;
+}
+
+/* 파일 업로드 창 테두리 제거 */
+input[type="file"] {
+    border: 1px dashed #ddd;
+    background: #fafafa;
+    cursor: pointer;
+    padding: 15px;
+}
+
+/* 버튼 영역 */
+.btn-area {
+    margin-top: 30px;
+    text-align: center; /* 버튼을 하단 정중앙에 배치 */
+}
+
+.btn {
+    background: #0d6efd;
+    color: white;
+    padding: 12px 40px; /* 버튼을 가로로 더 넓고 시원하게 수정 */
+    border-radius: 8px;
+    text-decoration: none;
+    border: none;
+    cursor: pointer;
+    font-size: 16px;
+    font-weight: bold;
+    display: inline-block;
+    box-shadow: 0 2px 5px rgba(13, 110, 253, 0.2);
+}
+
+.btn:hover {
+    background: #0b5ed7;
+}
+
+.btn-cancel {
+    background: #6c757d;
+    margin-right: 10px;
+    box-shadow: 0 2px 5px rgba(108, 117, 125, 0.2);
+}
+
+.btn-cancel:hover {
+    background: #5c636a;
+}
+</style>
+
+</head>
+
+<body>
+
+<main>
+
+<div class="writeQna">
+
+    <div class="writeQna-header1">
+        <h1><a th:href="@{/qna}">QnA 게시판</a></h1>
+    </div>
+
+    <form action="/qna/write" method="post" class="card-writeQna" enctype="multipart/form-data">
+
+        <div class="form-row">
+            <div class="form-group">
+                <label>카테고리</label>
+                <select name="category" required>
+                    <option value="" disabled selected>카테고리를 선택하세요</option>
+                    <option value="예약문의">예약문의</option>
+                    <option value="결제문의">결제문의</option>
+                    <option value="이용문의">이용문의</option>
+                    <option value="환불문의">환불문의</option>
+                    <option value="기타">기타</option>
+                </select>
+            </div>
+
+            <div class="form-group">
+                <label>비밀번호</label>
+                <input type="password" name="password" placeholder="비밀번호 입력">
+            </div>
+        </div>
+
+        <div class="form-group">
+            <label>제목</label>
+            <input type="text" name="title" placeholder="제목을 입력하세요" required>
+        </div>
+
+        <div class="form-group">
+            <label>내용</label>
+            <textarea name="content" placeholder="내용을 입력하세요" required></textarea>
+        </div>
+
+        <div style="margin-bottom: 20px; background-color: #f8f9fa; padding: 15px; border-radius: 8px; border: 1px dashed #ddd;">
+	        <label style="font-weight: bold; font-size: 14px; color: #555; display: block; margin-bottom: 8px;">📸 참고 사진 첨부 (선택)</label>
+	        <input type="file" name="qnaImage" accept="image/*" style="font-size: 13px; color: #666;">
+	    </div>
+
+        <div class="btn-area">
+            <a th:href="@{/qna}" class="btn btn-cancel">취소</a>
+            <button type="submit" class="btn">작성</button>
+        </div>
+
+    </form>
+
+</div>
+
+</main>
+
+</body>
+</html>

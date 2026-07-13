@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+<meta charset="UTF-8">
+<title>전체 이용 후기 - 스페이스클라우드</title>
+<link href="/css/main.css" rel="stylesheet">
+<link href="/css/app.css" rel="stylesheet">
+<style>
+    body { background-color: #f8f9fa; font-family: Arial, sans-serif; margin: 0; padding: 0; }
+    .review-container { width: 1000px; margin: 60px auto; padding: 0 20px; box-sizing: border-box; }
+    .header-area { margin-bottom: 35px; border-bottom: 2px solid #ff3a5a; padding-bottom: 15px; display: flex; justify-content: space-between; align-items: center; }
+    .header-area h1 { font-size: 26px; font-weight: bold; color: #222; margin: 0; }
+    .header-area a { text-decoration: none; color: #666; font-size: 15px; font-weight: bold; }
+    
+    /* 리뷰 그리드 레이아웃 */
+    .review-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 25px; }
+    .review-card { background: white; border-radius: 12px; padding: 25px; box-shadow: 0 4px 15px rgba(0,0,0,0.04); box-sizing: border-box; display: flex; flex-direction: column; justify-content: space-between; transition: transform 0.2s; }
+    .review-card:hover { transform: translateY(-3px); }
+    
+    .card-top { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 15px; }
+    .user-info { font-weight: bold; color: #333; font-size: 15px; }
+    .rating-stars { color: #ffbc00; font-size: 16px; }
+    
+    .card-middle { display: flex; gap: 15px; margin-bottom: 15px; min-height: 90px; }
+    .review-text { flex: 1; font-size: 14px; color: #555; line-height: 1.6; white-space: pre-wrap; }
+    .review-img { width: 90px; height: 90px; border-radius: 8px; object-fit: cover; box-shadow: 0 2px 6px rgba(0,0,0,0.08); }
+    
+    .card-bottom { font-size: 12px; color: #999; border-top: 1px solid #f1f3f5; padding-top: 12px; display: flex; justify-content: space-between; }
+</style>
+</head>
+<body>
+
+<main class="review-container">
+    <div class="header-area">
+        <h1>✨ 생생한 이용 후기 목록</h1>
+        <a href="/">🏠 메인으로 돌아가기</a>
+    </div>
+
+    <!-- 리뷰 목록 반복 출력 구역 -->
+    <div class="review-grid">
+        <div class="review-card" th:each="review : ${reviewList}">
+            <div>
+                <div class="card-top">
+                   <span class="user-info" th:text="${review.userLoginId != null ? review.userLoginId : '게스트'}">유저아이디</span>
+                    <span class="rating-stars" th:text="${'★ '.repeat(review.rating)}">★★★★★</span>
+                </div>
+                
+                <div class="card-middle">
+                    <div class="review-text" th:text="${review.content}">후기 본문 내용이 여기에 출력됩니다. 공간이 너무 이쁘고 좋았어요! 다음에도 꼭 이용할게요.</div>
+                    
+                    <!-- 🟢 업로드된 포토 후기 사진이 존재할 때만 우측에 노출 -->
+                    <img th:if="${review.imageUrl != null && review.imageUrl != ''}" th:src="${review.imageUrl}" class="review-img" alt="리뷰 사진">
+                </div>
+            </div>
+            
+            <div class="card-bottom">
+                <span th:text="${review.spaceName != null ? review.spaceName : '등록된 공간'}">공간명</span>
+                <span th:text="${review.createdAt != null ? #temporals.format(review.createdAt, 'yyyy-MM-dd HH:mm') : ''}">2026-07-11</span>
+            </div>
+        </div>
+    </div>
+
+    <!-- 데이터가 없을 때 디펜스 -->
+    <div th:if="${#lists.isEmpty(reviewList)}" style="text-align: center; padding: 80px 0; color: #bbb; font-size: 16px;">
+        아직 작성된 공간 이용 후기가 존재하지 않습니다.
+    </div>
+</main>
+
+</body>
+</html>

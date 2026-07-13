@@ -1,0 +1,207 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>공간대여 - Q&A 게시판</title>
+    
+    <link href="/css/main.css" rel="stylesheet">
+    <link href="/css/app.css" rel="stylesheet">
+    <link href="/css/total.css" rel="stylesheet">
+    <link href="/css/admin.css" rel="stylesheet">
+    <link href="/css/font-awesome.min.css" rel="stylesheet">
+    <link href="/css/login.css" rel="stylesheet">
+    
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons|Material+Icons+Sharp|Material+Icons+Two+Tone|Material+Icons+Outlined" rel="stylesheet">	
+    
+    <style>
+        /* QnA 전용 스타일 보정 */
+        .qna-table th {
+            background-color: #f8f9fa !important;
+            color: #333333 !important;
+            font-weight: bold !important;
+            text-align: center !important;
+            padding: 14px 10px !important;
+            border-bottom: 2px solid #eef2f6 !important;
+            font-size: 14px !important;
+        }
+        .qna-table td {
+            padding: 15px 10px !important;
+            border-bottom: 1px solid #eef2f6 !important;
+            color: #444444 !important;
+            font-size: 14px !important;
+            vertical-align: middle !important;
+        }
+        .badge-wait {
+            background-color: #6c757d !important;
+            color: #ffffff !important;
+            padding: 4px 8px !important;
+            border-radius: 4px !important;
+            font-size: 11px !important;
+            font-weight: bold !important;
+            display: inline-block !important;
+            margin-left: 5px !important;
+        }
+        .badge-complete {
+            background-color: #28a745 !important;
+            color: #ffffff !important;
+            padding: 4px 8px !important;
+            border-radius: 4px !important;
+            font-size: 11px !important;
+            font-weight: bold !important;
+            display: inline-block !important;
+            margin-left: 5px !important;
+        }
+        .page-link-custom {
+            display: inline-flex !important;
+            align-items: center !important;
+            justify-content: center !important;
+            width: 32px !important;
+            height: 32px !important;
+            border-radius: 50% !important;
+            text-decoration: none !important;
+            color: #555555 !important;
+            font-weight: bold !important;
+            font-size: 14px !important;
+            transition: all 0.2s !important;
+        }
+        .page-link-custom.active {
+            background-color: #ff3a5a !important;
+            color: #ffffff !important;
+        }
+        .page-link-custom:hover:not(.active) {
+            background-color: #f1f3f5 !important;
+        }
+    </style>
+</head>
+<body style="display: flex !important; flex-direction: column !important; min-height: 100vh !important; margin: 0 !important; padding: 0 !important; background-color: #f8f9fa !important; font-family: 'Malgun Gothic', sans-serif !important;">
+
+    <!-- 1. 상단 GNB 헤더 영역 (메인 화면과 완전 일치형 피드백 반영) -->
+    <div style="width: 100% !important; background-color: #ffffff !important; border-bottom: 1px solid #eef2f6 !important; position: fixed !important; top: 0 !important; left: 0 !important; z-index: 9999 !important; box-shadow: 0 2px 10px rgba(0,0,0,0.02) !important;">
+        <div style="max-width: 1200px !important; margin: 0 auto !important; display: flex !important; justify-content: space-between !important; align-items: center !important; height: 75px !important; padding: 0 20px !important; box-sizing: border-box !important;">
+            
+            <!-- 로고 및 메뉴 -->
+            <div style="display: flex !important; align-items: center !important; gap: 30px !important; flex-shrink: 0 !important;">
+                <a href="/" style="font-size: 22px !important; font-weight: 800 !important; color: #ff3a5a !important; text-decoration: none !important; letter-spacing: -0.5px !important;">SpaceCloud</a>
+                <div style="display: flex !important; gap: 20px !important; align-items: center !important;">
+                    <a href="/" style="text-decoration: none !important; color: #333333 !important; font-weight: 600 !important; font-size: 14px !important;">Home</a>
+                    <a href="/qna" style="text-decoration: none !important; color: #ff3a5a !important; font-weight: 800 !important; font-size: 14px !important;">Q&A</a>
+                    <a href="/notice/list" style="text-decoration: none !important; color: #333333 !important; font-weight: 600 !important; font-size: 14px !important;">공지사항</a>
+                </div>
+            </div>
+            
+            <!-- 🛠️ 상단 헤더 내장형 알약 검색바 (버튼 크기 65px 고정으로 버그 완벽 수리) -->
+            <div style="flex: 1 !important; max-width: 380px !important; margin: 0 15px !important; display: block !important;">
+                <form th:action="${session.loginUser != null ? '/user/space/search' : '/space/search'}" method="get" 
+                      style="display: flex !important; flex-direction: row !important; align-items: center !important; background-color: #f1f3f5 !important; padding: 0 6px 0 15px !important; border-radius: 30px !important; border: 1px solid #e9ecef !important; height: 42px !important; width: 100% !important; box-sizing: border-box !important; margin: 0 !important; box-shadow: none !important;">
+                    <span class="material-icons-outlined" style="color: #ff3a5a !important; font-size: 20px !important; flex-shrink: 0 !important; display: inline-block !important; margin-right: 5px !important;">search</span>
+                    <input type="text" name="keyword" th:value="${keyword}" placeholder="공간 종류나 지역 검색..." 
+                           style="display: inline-block !important; flex: 1 !important; width: 100% !important; height: 100% !important; border: none !important; outline: none !important; font-size: 14px !important; font-weight: 600 !important; background: transparent !important; color: #222222 !important; padding: 0 !important; margin: 0 !important; box-shadow: none !important;" />
+                    <button type="submit" style="background-color: #ff3a5a !important; color: #ffffff !important; height: 32px !important; width: 65px !important; min-width: 65px !important; max-width: 65px !important; padding: 0 !important; border: none !important; border-radius: 20px !important; font-size: 13px !important; font-weight: bold !important; cursor: pointer !important; white-space: nowrap !important; flex-shrink: 0 !important; display: inline-flex !important; align-items: center !important; justify-content: center !important; margin: 0 !important; box-shadow: none !important;">검색</button>
+                </form>
+            </div>
+            
+            <!-- 로그인 구역 -->
+            <div style="display: flex !important; align-items: center !important; gap: 15px !important; font-size: 14px !important; flex-shrink: 0 !important;">
+                <th:block th:if="${session.loginUser == null}">
+                    <a href="/user/login" style="text-decoration: none !important; color: #666666 !important; font-weight: 600 !important;">로그인</a>
+                    <a href="/user/join" style="text-decoration: none !important; color: #ffffff !important; background-color: #ff3a5a !important; padding: 7px 14px !important; border-radius: 20px !important; font-weight: 600 !important;">회원가입</a>
+                </th:block>
+                <div th:if="${session.loginUser != null}" style="font-size: 14px; color: #333; display: inline-block;">
+				    <a href="/user/reservation-list" style="color: #ff3a5a !important; font-weight: bold !important; text-decoration: underline !important;">
+				        <span th:text="${session.loginUser.loginId}">유저ID</span>님
+				    </a>
+				    <a href="/user/logout" style="color: #ff3a5a; text-decoration: none; margin-left: 12px; font-size: 12px;">로그아웃</a>
+				</div>
+            </div>
+            
+        </div>
+    </div>
+
+    <!-- 헤더 높이 확보용 여백 더미 바 -->
+    <div style="height: 110px !important; width: 100% !important; display: block !important; flex-shrink: 0 !important;"></div>
+
+    <!-- 2. QnA 본문 메인 섹션 -->
+    <main style="flex: 1 !important; width: 100% !important; max-width: 1000px !important; margin: 0 auto 50px auto !important; padding: 0 20px !important; box-sizing: border-box !important;">
+        
+        <!-- 게시판 카드 판넬 -->
+        <div style="background-color: #ffffff !important; border: 1px solid #eef2f6 !important; border-radius: 16px !important; padding: 40px !important; box-shadow: 0 4px 20px rgba(0, 0, 0, 0.03) !important;">
+            
+            <!-- 게시판 제목 및 글쓰기 버튼 -->
+            <div style="display: flex !important; justify-content: space-between !important; align-items: center !important; margin-bottom: 30px !important; border-bottom: 2px solid #ff3a5a !important; padding-bottom: 15px !important;">
+                <h2 style="font-size: 24px !important; font-weight: 800 !important; color: #222222 !important; margin: 0 !important; display: flex !important; align-items: center !important; gap: 8px !important;">🙋‍♂️ Q&A 게시판</h2>
+                <a href="/qna/write" style="text-decoration: none !important; background-color: #ff3a5a !important; color: #ffffff !important; padding: 10px 20px !important; border-radius: 8px !important; font-weight: bold !important; font-size: 14px !important; box-shadow: 0 4px 10px rgba(255, 58, 90, 0.1) !important;">질문 등록하기</a>
+            </div>
+
+            <!-- 🛠️ [정렬 대수선] 게시판 내부 검색창 세로 쪼개짐 철저 방어 코드 -->
+            <!-- <div style="display: flex !important; justify-content: center !important; margin-bottom: 35px !important;">
+                <form action="/qna" method="get" 
+                      style="display: flex !important; flex-direction: row !important; align-items: center !important; gap: 8px !important; width: 100% !important; max-width: 480px !important; margin: 0 !important;">
+                    
+                    <input type="text" name="searchKeyword" placeholder="게시글 제목이나 내용 검색..." 
+                           style="display: inline-block !important; flex: 1 !important; width: 100% !important; height: 42px !important; border: 1px solid #ddd !important; border-radius: 8px !important; padding: 0 15px !important; font-size: 14px !important; outline: none !important; box-shadow: none !important; margin: 0 !important;" />
+                    
+                    <button type="submit" 
+                            style="background-color: #333333 !important; color: #ffffff !important; border: none !important; height: 42px !important; width: 80px !important; min-width: 80px !important; max-width: 80px !important; padding: 0 !important; border-radius: 8px !important; font-weight: bold !important; font-size: 14px !important; cursor: pointer !important; display: inline-flex !important; align-items: center !important; justify-content: center !important; margin: 0 !important; box-shadow: none !important;">
+                        검색
+                    </button>
+                </form>
+            </div> -->
+
+            <!-- QnA 테이블 구조 -->
+            <table class="qna-table" style="width: 100% !important; border-collapse: collapse !important; margin-bottom: 30px !important;">
+                <thead>
+                    <tr>
+                        <th style="width: 8%;">번호</th>
+                        <th style="text-align: left !important; padding-left: 20px !important;">제목</th>
+                        <th style="width: 15%;">카테고리</th>
+                        <th style="width: 15%;">작성일</th>
+                        <th style="width: 15%;">공개 여부</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <!-- 🟢 유저님의 컨트롤러 이름에 맞춰 qnaList에서 list로 완벽 수정! -->
+                    <tr th:each="qna : ${list}">
+                        <td style="text-align: center !important; font-weight: bold; color: #888;" th:text="${qna.id}">5</td>
+                        <td style="text-align: left !important; padding-left: 20px !important;">
+                            <a th:href="@{/qna/detail/{id}(id=${qna.id})}" th:text="${qna.title}" style="text-decoration: none !important; color: #222222 !important; font-weight: 600 !important;">제목</a>
+                            <span class="badge-wait">답변대기</span>
+                        </td>
+                        <td style="text-align: center !important; color: #666;" th:text="${qna.category != null ? qna.category : '기타'}">기타</td>
+                        
+                        <!-- DB 필드명인 qna.createAt 매핑 반영 -->
+                        <td style="text-align: center !important; color: #999;" th:text="${#temporals.format(qna.createAt, 'yyyy-MM-dd')}">2026-07-10</td>
+                        
+                        <!-- 비밀번호 유무에 따른 비밀글 판별 디펜스 -->
+                        <td style="text-align: center !important; color: #666;" th:text="${qna.password != null && qna.password != '' ? '🔒 비밀글' : '공개글'}">공개글</td>
+                    </tr>
+                    
+                    <!-- 🟢 조건문도 qnaList에서 list로 통일 완료 -->
+                    <tr th:if="${#lists.isEmpty(list)}">
+                        <td colspan="5" style="text-align: center !important; padding: 50px 0 !important; color: #bbb !important; font-size: 15px !important;">등록된 Q&A 질문이 존재하지 않습니다.</td>
+                    </tr>
+                </tbody>
+            </table>
+
+            <!-- 트렌디한 라운드 스타일 페이징 블록 -->
+            <div style="display: flex !important; justify-content: center !important; gap: 8px !important; margin-top: 20px !important;">
+                <a href="#" class="page-link-custom">&lt;</a>
+                <a href="#" class="page-link-custom active">1</a>
+                <a href="#" class="page-link-custom">2</a>
+                <a href="#" class="page-link-custom">3</a>
+                <a href="#" class="page-link-custom">&gt;</a>
+            </div>
+
+        </div>
+    </main>
+
+    <!-- 3. 하단 푸터 영역 -->
+    <footer style="width: 100% !important; background-color: #111111 !important; color: #a6a6a6 !important; padding: 40px 20px !important; text-align: center !important; border-top: 1px solid #222222 !important; box-sizing: border-box !important;">
+        <div style="max-width: 1200px !important; margin: 0 auto !important; font-size: 12px !important; color: #666666 !important; line-height: 1.8 !important;">
+            <p style="margin: 0 0 5px 0 !important;">(주)스페이스클라우드 | 대표자: 주진우 | 고객센터: 1544-0000</p>
+            <p style="margin: 0 !important;">&copy; 2026 SpaceCloud. All rights reserved.</p>
+        </div>
+    </footer>
+
+    <script src="/js/jquery.min.js"></script>
+</body>
+</html>

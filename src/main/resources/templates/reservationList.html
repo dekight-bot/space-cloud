@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+
+    <title>공간대여 - 예약 내역</title>
+
+    <link href="/css/main.css" rel="stylesheet">
+    <link href="/css/app.css" rel="stylesheet">
+    <link href="/css/reservation.css" rel="stylesheet">
+
+</head>
+
+<body>
+
+<!-- Header -->
+<header id="header" class="alt" style="margin-top:10px;">
+    <div class="logo" style="font-size:40px;">
+        <a href="/index">Place Cloud</a>
+    </div>
+
+    <a href="/login" style="color:black;">Login</a>
+    <a href="#menu" style="color:black">Menu</a>
+</header>
+
+<!-- Nav -->
+<nav id="menu">
+    <ul class="links">
+        <li><a href="#">home</a></li>
+        <li><a href="#">지역별</a></li>
+        <li><a href="#">테마별</a></li>
+        <li><a href="#">카테고리별</a></li>
+    </ul>
+</nav>
+
+<main>
+
+<div class="container">
+
+    <div class="header">
+        <h2>예약 내역</h2>
+        <span class="count">
+            총 <b th:text="${totalCount}">0</b>건
+        </span>
+    </div>
+
+    <table>
+
+        <thead>
+        <tr>
+            <th>예약번호</th>
+            <th>장소명</th>
+            <th>예약일</th>
+            <th>예약시간</th>
+            <th>상태</th>
+            <th>관리</th>
+        </tr>
+        </thead>
+
+        <tbody>
+
+        <tr th:each="reservation : ${reservations}">
+
+            <td>
+                <a th:href="@{/mypage/reservations/{id}(id=${reservation.id})}"
+                   th:text="${reservation.id}">
+                </a>
+            </td>
+
+            <td th:text="${reservation.spaceName}"></td>
+
+            <td th:text="${reservation.reservationDate}"></td>
+
+            <td>
+                <span th:text="${reservation.startTime}"></span>
+                ~
+                <span th:text="${reservation.endTime}"></span>
+            </td>
+
+            <td>
+                <span th:if="${reservation.status == '예약완료'}">예약완료</span>
+                <span th:if="${reservation.status == '이용완료'}">이용완료</span>
+                <span th:if="${reservation.status == '예약취소'}">예약취소</span>
+            </td>
+
+            <td>
+                <form th:if="${reservation.status == '예약완료'}"
+                      th:action="@{/reservation/cancel/{id}(id=${reservation.id})}"
+                      method="post">
+                    <button type="submit">취소</button>
+                </form>
+            </td>
+
+        </tr>
+
+        <tr th:if="${#lists.isEmpty(reservations)}">
+            <td colspan="6">예약 내역이 없습니다.</td>
+        </tr>
+
+        </tbody>
+
+    </table>
+
+</div>
+
+</main>
+
+</body>
+</html>

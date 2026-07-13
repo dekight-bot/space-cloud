@@ -1,0 +1,142 @@
+@import url('https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@300;400;500;700&display=swap');
+
+/* 기존 템플릿 스타일 레이아웃을 무력화하고 중앙 정렬 */
+#custom-signup-page {
+    background-color: #f7f9fa !important;
+    display: flex !important;
+    justify-content: center !important;
+    align-items: center !important;
+    min-height: 100vh !important;
+    width: 100% !important;
+    padding: 60px 20px !important;
+    box-sizing: border-box !important;
+}
+
+/* 회원가입 중심 박스 */
+#custom-signup-page .signup-wrapper {
+    background-color: #ffffff !important;
+    width: 100% !important;
+    max-width: 520px !important;
+    border-radius: 16px !important;
+    box-shadow: 0 4px 24px rgba(0, 0, 0, 0.06) !important;
+    padding: 40px !important;
+    box-sizing: border-box !important;
+    margin: 0 auto !important; /* 무조건 수평 중앙 */
+}
+
+#custom-signup-page .signup-wrapper h1 {
+    font-size: 26px !important;
+    font-weight: 700 !important;
+    color: #1e293b !important;
+    text-align: center !important;
+    margin-bottom: 30px !important;
+    letter-spacing: -0.5px !important;
+}
+
+/* 입력 항목 그룹 */
+#custom-signup-page .form-group {
+    display: flex !important;
+    flex-direction: column !important;
+    margin-bottom: 20px !important;
+    width: 100% !important;
+    text-align: left !important; /* 왼쪽 정렬 보장 */
+}
+
+#custom-signup-page .form-group label {
+    font-size: 14px !important;
+    font-weight: 500 !important;
+    color: #475569 !important;
+    margin-bottom: 8px !important;
+}
+
+/* 입력창 디자인 통일 */
+#custom-signup-page .form-group input, 
+#custom-signup-page .form-group select {
+    width: 100% !important;
+    height: 46px !important;
+    padding: 0 16px !important;
+    border: 1px solid #cbd5e1 !important;
+    border-radius: 8px !important;
+    font-size: 14px !important;
+    color: #334155 !important;
+    background-color: #ffffff !important;
+    box-sizing: border-box !important;
+    transition: all 0.2s ease !important;
+}
+
+#custom-signup-page .form-group input:focus,
+#custom-signup-page .form-group select:focus {
+    outline: none !important;
+    border-color: #4A90E2 !important;
+    box-shadow: 0 0 0 3px rgba(74, 144, 226, 0.1) !important;
+}
+
+/* 이메일 그룹 */
+#custom-signup-page .email-group {
+    display: flex !important;
+    align-items: center !important;
+    gap: 8px !important;
+    width: 100% !important;
+}
+
+#custom-signup-page .email-group input {
+    flex: 1.2 !important;
+}
+
+#custom-signup-page .email-group span {
+    color: #94a3b8 !important;
+    font-weight: 500 !important;
+}
+
+#custom-signup-page .email-group select {
+    flex: 1 !important;
+}
+
+/* 주소 그룹 */
+#custom-signup-page .address-search-group {
+    display: flex !important;
+    gap: 8px !important;
+    margin-bottom: 8px !important;
+    width: 100% !important;
+}
+
+#custom-signup-page .address-search-group input {
+    flex: 2 !important;
+}
+
+#custom-signup-page .btn-address {
+    flex: 1 !important;
+    height: 46px !important;
+    background-color: #f1f5f9 !important;
+    border: 1px solid #cbd5e1 !important;
+    border-radius: 8px !important;
+    color: #475569 !important;
+    font-size: 14px !important;
+    font-weight: 500 !important;
+    cursor: pointer !important;
+    transition: all 0.2s !important;
+}
+
+#custom-signup-page .btn-address:hover {
+    background-color: #e2e8f0 !important;
+    color: #1e293b !important;
+}
+
+/* 최종 회원가입 버튼 */
+#custom-signup-page .btn-submit {
+    width: 100% !important;
+    height: 50px !important;
+    background-color: #4A90E2 !important;
+    border: none !important;
+    border-radius: 8px !important;
+    color: #ffffff !important;
+    font-size: 15px !important;
+    font-weight: 600 !important;
+    cursor: pointer !important;
+    margin-top: 10px !important;
+    transition: background-color 0.2s !important;
+}
+
+#custom-signup-page .btn-submit:hover {
+    background-color: #357ABD !important;
+}

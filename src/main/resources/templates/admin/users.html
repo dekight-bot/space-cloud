@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>SpaceCloud 최고관리자 - 회원 관리</title>
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons+Sharp" rel="stylesheet">
+    <style>
+        body { font-family: 'Malgun Gothic', sans-serif; margin: 0; padding: 0; background-color: #f1f3f5; display: flex; min-height: 100vh; }
+        aside { width: 260px; background-color: #1e1e2f; color: #fff; padding: 30px 20px; box-sizing: border-box; flex-shrink: 0; }
+        aside h2 { color: #ff3a5a; font-size: 22px; margin: 0 0 40px 0; font-weight: 800; text-align: center; }
+        aside ul { list-style: none; padding: 0; margin: 0; display: flex; flex-direction: column; gap: 10px; }
+        aside ul li a { display: flex; align-items: center; gap: 12px; color: #b3b3cc; text-decoration: none; padding: 12px 15px; border-radius: 8px; font-weight: bold; font-size: 15px; transition: all 0.2s; }
+        aside ul li a:hover, aside ul li a.active { background-color: #ff3a5a; color: #fff; }
+        
+        main { flex: 1; padding: 40px; box-sizing: border-box; }
+        header { margin-bottom: 30px; border-bottom: 2px solid #dee2e6; padding-bottom: 20px; }
+        header h1 { margin: 0; font-size: 26px; color: #222; }
+        
+        .table-container { background: #fff; padding: 25px; border-radius: 12px; box-shadow: 0 4px 10px rgba(0,0,0,0.02); }
+        table { width: 100%; border-collapse: collapse; font-size: 14px; text-align: left; }
+        th { padding: 15px 12px; border-bottom: 2px solid #dee2e6; color: #666; font-weight: bold; }
+        td { padding: 18px 12px; border-bottom: 1px solid #eee; color: #333; vertical-align: middle; }
+        
+        /* 🏷️ 권한 배지 스타일 */
+        .role-badge { padding: 4px 10px; border-radius: 12px; font-size: 12px; font-weight: bold; }
+        .role-admin { background-color: #ffebee; color: #c62828; }
+        .role-user { background-color: #e8f5e9; color: #1b5e20; }
+    </style>
+</head>
+<body>
+
+    <!-- 왼쪽 사이드바 메뉴 대조 가동 -->
+    <aside>
+		    <h2>SpaceCloud Admin</h2>
+		    <ul>
+		        <li><a href="/admin/home"><span class="material-icons-sharp">dashboard</span> 대시보드 홈</a></li>
+		        <li><a href="/admin/users" class="active"><span class="material-icons-sharp">people</span> 회원 명단 관리</a></li>
+		        <li><a href="/admin/spaces"><span class="material-icons-sharp">room</span> 공간 등록/관리</a></li>
+		        <!-- 📢 내일 약속한 공지사항 메뉴 여기에 이식! -->
+		        <li><a href="/admin/notices"><span class="material-icons-sharp">campaign</span> 공지사항 관리</a></li>
+		        <li><a href="/admin/reservations"><span class="material-icons-sharp">receipt_long</span> 전체 예약 현황</a></li>
+		        <li><a href="/admin/qna"><span class="material-icons-sharp">question_answer</span> Q&A 답변 관리</a></li>
+		        <li><a href="/" style="margin-top: 50px; background: #333;"><span class="material-icons-sharp">logout</span> 사용자 홈 이동</a></li>
+		    </ul>
+		</aside>
+
+    <!-- 우측 메인 제어부 -->
+    <main>
+        <header>
+            <h1>👥 플랫폼 가입 회원 명단 조회</h1>
+        </header>
+
+        <div class="table-container">
+            <table>
+                <thead>
+                    <tr>
+                        <th style="width: 100px;">회원번호</th>
+                        <th>로그인 ID (계정명)</th>
+                        <th>이름 / 닉네임</th>
+                        <th>이메일 주소</th>
+                        <th>주소</th>
+                        <th style="width: 140px; text-align: center;">계정 등급</th>
+                    </tr>
+                </thead>
+                <tbody>
+					    <!-- 🟢 유저님의 User 엔티티 변수명 규격과 1:1 완벽 연동 -->
+					    <tr th:each="user : ${userList}">
+					        <td th:text="${user.id}" style="font-weight: bold; color: #888;">1</td>
+					        <td th:text="${user.loginId}" style="font-weight: bold; color: #222;">user01</td>
+					        <td th:text="${user.name}">홍길동</td>
+					        <td th:text="${user.email}">user@test.com</td>
+					        
+					        <!-- 새롭게 추가된 주소 필드 노출 -->
+					        <td th:text="${user.address != null && user.address != '' ? user.address : '등록된 주소 없음'}" style="color: #666;">서울시 강남구</td>
+					        
+					        <td style="text-align: center;">
+					            <!-- 권한 등급별 알약 배지 분기 처리 -->
+					            <span th:if="${user.role == 'ADMIN'}" class="role-badge role-admin">최고관리자</span>
+					            <span th:if="${user.role == 'USER' || user.role == null}" class="role-badge role-user">일반회원</span>
+					        </td>
+					    </tr>
+					    
+					    <!-- 회원 명단 방어선 -->
+					    <tr th:if="${#lists.isEmpty(userList)}">
+					        <td colspan="6" style="text-align: center; padding: 60px 0; color: #999;">현재 가입된 회원 데이터가 존재하지 않습니다.</td>
+					    </tr>
+					</tbody>
+            </table>
+        </div>
+    </main>
+
+</body>
+</html>

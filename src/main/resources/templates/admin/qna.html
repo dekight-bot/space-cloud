@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>SpaceCloud 최고관리자 - Q&A 관리</title>
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons+Sharp" rel="stylesheet">
+    <style>
+        body { font-family: 'Malgun Gothic', sans-serif; margin: 0; padding: 0; background-color: #f1f3f5; display: flex; min-height: 100vh; }
+        aside { width: 260px; background-color: #1e1e2f; color: #fff; padding: 30px 20px; box-sizing: border-box; flex-shrink: 0; }
+        aside h2 { color: #ff3a5a; font-size: 22px; margin: 0 0 40px 0; font-weight: 800; text-align: center; }
+        aside ul { list-style: none; padding: 0; margin: 0; display: flex; flex-direction: column; gap: 10px; }
+        aside ul li a { display: flex; align-items: center; gap: 12px; color: #b3b3cc; text-decoration: none; padding: 12px 15px; border-radius: 8px; font-weight: bold; font-size: 15px; transition: all 0.2s; }
+        aside ul li a:hover, aside ul li a.active { background-color: #ff3a5a; color: #fff; }
+        
+        main { flex: 1; padding: 40px; box-sizing: border-box; }
+        header { margin-bottom: 30px; border-bottom: 2px solid #dee2e6; padding-bottom: 20px; }
+        header h1 { margin: 0; font-size: 26px; color: #222; }
+        
+        .table-container { background: #fff; padding: 25px; border-radius: 12px; box-shadow: 0 4px 10px rgba(0,0,0,0.02); }
+        table { width: 100%; border-collapse: collapse; font-size: 14px; text-align: left; }
+        th { padding: 15px 12px; border-bottom: 2px solid #dee2e6; color: #666; font-weight: bold; }
+        td { padding: 18px 12px; border-bottom: 1px solid #eee; color: #333; vertical-align: top; }
+        
+        .status-badge { padding: 5px 10px; border-radius: 20px; font-size: 12px; font-weight: bold; display: inline-block; }
+        .status-wait { background-color: #fff3cd; color: #856404; } /* 답변 대기 */
+        .status-done { background-color: #d4edda; color: #155724; } /* 답변 완료 */
+        
+        .answer-box { margin-top: 10px; background: #f8f9fa; padding: 15px; border-radius: 8px; border: 1px solid #e9ecef; }
+        .answer-form { display: flex; gap: 10px; margin-top: 10px; }
+        .answer-input { flex: 1; height: 38px; padding: 0 10px; border: 1px solid #ced4da; border-radius: 6px; box-sizing: border-box; }
+        .btn-reply { background: #222; color: white; border: none; padding: 0 15px; border-radius: 6px; font-weight: bold; cursor: pointer; font-size: 13px; }
+        .btn-reply:hover { background: #000; }
+        
+        .reply-item { padding: 5px 0; border-bottom: 1px dashed #ddd; }
+        .reply-item:last-child { border-bottom: none; }
+    </style>
+</head>
+<body>
+
+   		<aside>
+		    <h2>SpaceCloud Admin</h2>
+		    <ul>
+		        <li><a href="/admin/home"><span class="material-icons-sharp">dashboard</span> 대시보드 홈</a></li>
+		        <li><a href="/admin/users" class="active"><span class="material-icons-sharp">people</span> 회원 명단 관리</a></li>
+		        <li><a href="/admin/spaces"><span class="material-icons-sharp">room</span> 공간 등록/관리</a></li>
+		        <!-- 📢 내일 약속한 공지사항 메뉴 여기에 이식! -->
+		        <li><a href="/admin/notices"><span class="material-icons-sharp">campaign</span> 공지사항 관리</a></li>
+		        <li><a href="/admin/reservations"><span class="material-icons-sharp">receipt_long</span> 전체 예약 현황</a></li>
+		        <li><a href="/admin/qna"><span class="material-icons-sharp">question_answer</span> Q&A 답변 관리</a></li>
+		        <li><a href="/" style="margin-top: 50px; background: #333;"><span class="material-icons-sharp">logout</span> 사용자 홈 이동</a></li>
+		    </ul>
+		</aside>
+
+    <main>
+        <header>
+            <h1>💬 고객 Q&A 문의 및 답변 관리</h1>
+        </header>
+
+        <div class="table-container">
+            <table>
+                <thead>
+                    <tr>
+                        <th style="width: 70px;">번호</th>
+                        <th style="width: 130px;">작성자 ID</th>
+                        <th style="width: 150px;">카테고리</th>
+                        <th>문의 및 답변 내용</th>
+                        <th style="width: 120px;">처리 상태</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr th:each="qna : ${qnaList}">
+                        <td th:text="${qna.id}" style="font-weight: bold; color:#888;">1</td>
+                        <!-- 작성자 ID 매핑 일치 -->
+                        <td th:text="${qna.userLoginId}">user01</td>
+                        <!-- 카테고리 매핑 일치 -->
+                        <td th:text="${qna.category}" style="color: #666; font-weight: 500;">공간 문의</td>
+                        <td>
+                            <!-- 질문 제목 및 본문 구역 -->
+                            <div style="font-weight: bold; font-size: 15px; margin-bottom: 5px;" th:text="${qna.title}">문의 제목입니다.</div>
+                            <div th:text="${qna.content}" style="font-weight: 500; line-height: 1.5; color: #444;">질문 본문내용</div>
+                            
+                            <!-- 🟢 답변 처리 타임라인 구역 -->
+                            <div class="answer-box">
+                                <!-- 케이스 A: 이미 누적된 답변이 존재하는 경우 (리스트 루프) -->
+                                <div th:if="${not #lists.isEmpty(qna.replies)}">
+                                    <div th:each="reply : ${qna.replies}" class="reply-item">
+                                        <strong style="color: #ff3a5a;" th:text="'[' + ${reply.writer} + '의 답변] '">[ADMIN의 답변]</strong>
+                                        <span th:text="${reply.content}" style="color: #222;">정성스러운 답변 본문</span>
+                                    </div>
+                                </div>
+                                
+                                <!-- 최고 관리자 전용 신규 답글 등록 폼 -->
+                                <form action="/admin/qna/reply" method="post" class="answer-form">
+								    <input type="hidden" name="id" th:value="${qna.id}">
+								    <input type="text" name="content" class="answer-input" placeholder="이곳에 관리자 답변을 입력하세요..." required>
+								    <button type="submit" class="btn-reply">답변추가</button>
+								</form>
+                            </div>
+                        </td>
+                        <td>
+                            <!-- 상태 배지 분기 (리스트가 비어있는지 여부로 판단) -->
+                            <span th:if="${not #lists.isEmpty(qna.replies)}" class="status-badge status-done">답변완료</span>
+                            <span th:if="${#lists.isEmpty(qna.replies)}" class="status-badge status-wait">답변대기</span>
+                        </td>
+                    </tr>
+                    <tr th:if="${#lists.isEmpty(qnaList)}">
+                        <td colspan="5" style="text-align: center; padding: 50px 0; color: #999;">현재 등록된 고객 Q&A 문의가 없습니다.</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </main>
+
+</body>
+</html>

@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+<meta charset="UTF-8">
+<title>QnA 수정</title>
+<link href="/css/main.css" rel="stylesheet">
+<link href="/css/app.css" rel="stylesheet">
+<style>
+    /* 이전에 맞춘 qnawrite.html의 CSS와 100% 동일하므로 본문 간결화를 위해 생략합니다. 기존 CSS를 그대로 붙여넣으시면 됩니다! */
+    body { background: #f5f7fb; font-family: Arial, sans-serif; }
+    .writeQna { width: 850px; margin: 80px auto; }
+    .writeQna-header1 { margin-bottom: 25px; }
+    .writeQna-header1 h1 { font-size: 28px; font-weight: bold; color: #222; text-decoration: none; }
+    .card-writeQna { background: white; padding: 40px; border-radius: 12px; box-shadow: 0 4px 15px rgba(0,0,0,0.05); box-sizing: border-box; }
+    .form-row { display: flex; gap: 20px; width: 100%; margin-bottom: 25px; }
+    .form-group { width: 100%; display: flex; flex-direction: column; align-items: flex-start; gap: 8px; margin-bottom: 25px; }
+    .form-row .form-group { flex: 1; margin-bottom: 0; }
+    label { font-size: 14px; font-weight: bold; color: #333; }
+    input, textarea, select { width: 100% !important; padding: 14px; border: 1px solid #dcdcdc; border-radius: 8px; font-size: 15px; background-color: white; box-sizing: border-box; outline: none; }
+    select { height: 50px; cursor: pointer; }
+    textarea { min-height: 280px; resize: none; }
+    .btn-area { margin-top: 30px; text-align: center; }
+    .btn { background: #0d6efd; color: white; padding: 12px 40px; border-radius: 8px; text-decoration: none; border: none; cursor: pointer; font-size: 16px; font-weight: bold; display: inline-block; }
+    .btn-cancel { background: #6c757d; margin-right: 10px; }
+</style>
+</head>
+<body>
+<main>
+<div class="writeQna">
+    <div class="writeQna-header1">
+        <h1><a th:href="@{/qna}">QnA 게시판 - 글 수정</a></h1>
+    </div>
+
+    <form action="/qna/modify" method="post" class="card-writeQna" th:if="${qna != null}">
+        
+        <input type="hidden" name="id" th:value="${qna.id}">
+
+        <div class="form-row">
+            <div class="form-group">
+                <label>카테고리</label>
+                <select name="category" required>
+                    <option value="예약문의" th:selected="${qna.category == '예약문의'}">예약문의</option>
+                    <option value="결제문의" th:selected="${qna.category == '결제문의'}">결제문의</option>
+                    <option value="이용문의" th:selected="${qna.category == '이용문의'}">이용문의</option>
+                    <option value="환불문의" th:selected="${qna.category == '환불문의'}">환불문의</option>
+                    <option value="기타" th:selected="${qna.category == '기타'}">기타</option>
+                </select>
+            </div>
+            <div class="form-group">
+                <label>비밀번호</label>
+                <input type="password" name="password" th:value="${qna.password}" placeholder="비밀번호 입력">
+            </div>
+        </div>
+
+        <div class="form-group">
+            <label>제목</label>
+            <input type="text" name="title" th:value="${qna.title}" placeholder="제목을 입력하세요" required>
+        </div>
+
+        <div class="form-group">
+            <label>내용</label>
+            <textarea name="content" th:text="${qna.content}" placeholder="내용을 입력하세요" required></textarea>
+        </div>
+
+        <div class="btn-area">
+            <a th:href="@{/qna/detail(id=${qna.id})}" class="btn btn-cancel">취소</a>
+            <button type="submit" class="btn" style="background: #198754;">수정 완료</button>
+        </div>
+    </form>
+</div>
+</main>
+</body>
+</html>

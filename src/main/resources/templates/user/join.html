@@ -1,0 +1,189 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+<meta charset="UTF-8">
+<title>스페이스클라우드 - 회원가입</title>
+
+<script src="//t1.daumcdn.net/mapjsapi/bundle/postcode/prod/postcode.v2.js"></script>
+
+<style>
+body {
+    background-color: #f5f7fb;
+    font-family: 'Malgun Gothic', sans-serif;
+    margin: 0;
+    padding: 0;
+}
+
+.join-container {
+    width: 480px;
+    margin: 60px auto;
+    background: #ffffff;
+    padding: 40px;
+    border-radius: 12px;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+    box-sizing: border-box;
+}
+
+.join-title {
+    font-size: 26px;
+    font-weight: bold;
+    color: #333333;
+    text-align: center;
+    margin-bottom: 30px;
+}
+
+.form-group {
+    margin-bottom: 20px;
+}
+
+.form-group label {
+    display: block;
+    font-size: 14px;
+    font-weight: bold;
+    color: #555555;
+    margin-bottom: 8px;
+}
+
+.form-control {
+    width: 100%;
+    padding: 12px;
+    border: 1px solid #cccccc;
+    border-radius: 6px;
+    font-size: 14px;
+    box-sizing: border-box;
+    outline: none;
+    transition: border-color 0.2s;
+}
+
+.form-control:focus {
+    border-color: #ff3a5a; /* 스페이스클라우드 시그니처 핑크톤 */
+}
+
+/* 주소 입력 영역 스타일 */
+.address-group {
+    display: flex;
+    gap: 10px;
+    margin-bottom: 10px;
+}
+
+.btn-address {
+    background: #333333;
+    color: #ffffff;
+    border: none;
+    padding: 0 15px;
+    border-radius: 6px;
+    font-size: 14px;
+    cursor: pointer;
+    white-space: nowrap;
+}
+
+.btn-address:hover {
+    background: #111111;
+}
+
+/* 가입하기 버튼 */
+.btn-submit {
+    width: 100%;
+    padding: 14px;
+    background: #ff3a5a;
+    color: #ffffff;
+    border: none;
+    border-radius: 6px;
+    font-size: 16px;
+    font-weight: bold;
+    cursor: pointer;
+    margin-top: 10px;
+    transition: background 0.2s;
+}
+
+.btn-submit:hover {
+    background: #e02c4b;
+}
+
+.login-link {
+    text-align: center;
+    margin-top: 20px;
+    font-size: 14px;
+    color: #666666;
+}
+
+.login-link a {
+    color: #ff3a5a;
+    text-decoration: none;
+    font-weight: bold;
+}
+</style>
+</head>
+<body>
+
+<div class="join-container">
+    <div class="join-title">회원가입</div>
+
+    <form action="/user/join" method="post">
+        
+        <div class="form-group">
+            <label for="loginId">아이디</label>
+            <input type="text" id="loginId" name="loginId" class="form-control" placeholder="사용할 아이디를 입력하세요" required>
+        </div>
+
+        <div class="form-group">
+            <label for="password">비밀번호</label>
+            <input type="password" id="password" name="password" class="form-control" placeholder="비밀번호를 입력하세요" required>
+        </div>
+
+        <div class="form-group">
+            <label for="name">이름</label>
+            <input type="text" id="name" name="name" class="form-control" placeholder="이름을 입력하세요" required>
+        </div>
+
+        <div class="form-group">
+            <label for="email">이메일</label>
+            <input type="email" id="email" name="email" class="form-control" placeholder="example@space.com" required>
+        </div>
+
+        <div class="form-group">
+            <label>주소</label>
+            <div class="address-group">
+                <input type="text" id="postcode" class="form-control" placeholder="우편번호" readonly>
+                <button type="button" class="btn-address" onclick="execDaumPostcode()">주소 검색</button>
+            </div>
+            <input type="text" id="address" name="address" class="form-control" placeholder="기본 주소" readonly required>
+            <input type="text" id="detailAddress" class="form-control" placeholder="상세 주소(선택)" style="margin-top: 8px;">
+        </div>
+
+        <button type="submit" class="btn-submit">가입하기</button>
+    </form>
+
+    <div class="login-link">
+        이미 회원이신가요? <a href="/user/login">로그인하기</a>
+    </div>
+</div>
+
+<script>
+// 카카오 공식 가이드 기반 우편번호 팝업 띄우기 함수
+function execDaumPostcode() {
+    new daum.Postcode({
+        oncomplete: function(data) {
+            // 팝업에서 검색결과 항목을 클릭했을때 실행할 코드를 작성하는 부분.
+
+            // 도로명 주소와 지번 주소 중 선택한 주소 타입을 가져온다.
+            var addr = ''; 
+            if (data.userSelectedType === 'R') { // 사용자가 도로명 주소를 선택했을 경우
+                addr = data.roadAddress;
+            } else { // 사용자가 지번 주소를 선택했을 경우(J)
+                addr = data.jibunAddress;
+            }
+
+            // 우편번호와 주소 정보를 해당 필드에 넣는다.
+            document.getElementById('postcode').value = data.zonecode;
+            document.getElementById('address').value = addr;
+            
+            // 커서를 상세주소 필드로 이동한다.
+            document.getElementById("detailAddress").focus();
+        }
+    }).open();
+}
+</script>
+
+</body>
+</html>

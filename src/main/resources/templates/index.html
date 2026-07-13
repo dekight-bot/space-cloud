@@ -1,0 +1,204 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>공간대여 - 우리만의 공간</title>
+    
+    <link href="/css/main.css" rel="stylesheet">
+    <link href="/css/total.css" rel="stylesheet">
+    <link href="/css/admin.css" rel="stylesheet">
+    <link href="/css/font-awesome.min.css" rel="stylesheet">
+    <link href="/css/login.css" rel="stylesheet">
+    
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/swiper@9/swiper-bundle.min.css"/>
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons|Material+Icons+Sharp|Material+Icons+Two+Tone|Material+Icons+Outlined" rel="stylesheet">	
+</head>
+<body style="margin: 0 !important; padding: 0 !important; background-color: #ffffff !important; font-family: 'Malgun Gothic', sans-serif !important; display: block !important;">
+
+    <!-- 1. 상단 GNB 헤더 영역 -->
+    <div style="width: 100% !important; background-color: #ffffff !important; border-bottom: 1px solid #eef2f6 !important; position: fixed !important; top: 0 !important; left: 0 !important; z-index: 9999 !important; box-shadow: 0 2px 10px rgba(0,0,0,0.02) !important; height: 75px !important;">
+        <div style="max-width: 1200px !important; margin: 0 auto !important; display: flex !important; justify-content: space-between !important; align-items: center !important; height: 75px !important; padding: 0 20px !important; box-sizing: border-box !important;">
+            
+            <div style="display: flex !important; align-items: center !important; gap: 30px !important; flex-shrink: 0 !important;">
+                <a href="/" style="font-size: 22px !important; font-weight: 800 !important; color: #ff3a5a !important; text-decoration: none !important; letter-spacing: -0.5px !important;">SpaceCloud</a>
+                <div style="display: flex !important; gap: 20px !important; align-items: center !important;">
+                    <a href="/" style="text-decoration: none !important; color: #333333 !important; font-weight: 600 !important; font-size: 14px !important;">Home</a>
+                    <a href="/qna" style="text-decoration: none !important; color: #333333 !important; font-weight: 600 !important; font-size: 14px !important;">Q&A</a>
+                    <a href="/notice/list" style="text-decoration: none !important; color: #333333 !important; font-weight: 600 !important; font-size: 14px !important;">공지사항</a>
+                </div>
+            </div>
+            
+            <div style="flex: 1 !important; max-width: 380px !important; margin: 0 15px !important; display: block !important;">
+                <form th:action="${session.loginUser != null ? '/user/space/search' : '/space/search'}" method="get" style="display: flex !important; flex-direction: row !important; align-items: center !important; background-color: #f1f3f5 !important; padding: 0 6px 0 15px !important; border-radius: 30px !important; border: 1px solid #e9ecef !important; height: 42px !important; width: 100% !important; box-sizing: border-box !important; margin: 0 !important;">
+                    <span class="material-icons-outlined" style="color: #ff3a5a !important; font-size: 20px !important; margin-right: 5px !important;">search</span>
+                    <input type="text" name="keyword" th:value="${keyword}" placeholder="공간 종류나 지역 검색..." style="flex: 1 !important; width: 100% !important; height: 100% !important; border: none !important; outline: none !important; font-size: 14px !important; background: transparent !important; color: #222222 !important; padding: 0 !important;" />
+                    <button type="submit" style="background-color: #ff3a5a !important; color: #ffffff !important; height: 32px !important; width: 65px !important; border: none !important; border-radius: 20px !important; font-size: 13px !important; font-weight: bold !important; cursor: pointer !important;">검색</button>
+                </form>
+            </div>
+            
+            <div style="display: flex !important; align-items: center !important; gap: 15px !important; font-size: 14px !important; flex-shrink: 0 !important;">
+                <th:block th:if="${session.loginUser == null}">
+                    <a href="/user/login" style="text-decoration: none !important; color: #666666 !important; font-weight: 600 !important;">로그인</a>
+                    <a href="/user/join" style="text-decoration: none !important; color: #ffffff !important; background-color: #ff3a5a !important; padding: 7px 14px !important; border-radius: 20px !important; font-weight: 600 !important;">회원가입</a>
+                </th:block>
+                <th:block th:if="${session.loginUser != null}">
+				    <a href="/user/reservation-list" style="color: #ff3a5a !important; font-weight: bold !important; text-decoration: underline !important;"><span th:text="${session.loginUser.loginId}">유저ID</span>님</a>
+				    <a href="/user/logout" style="color: #ff3a5a; text-decoration: none; margin-left: 12px; font-size: 12px;">로그아웃</a>
+				</th:block>
+            </div>
+        </div>
+    </div>
+
+    <!-- 🟢 GNB 헤더 아래에 생기는 고정 안전지대 (여기서부터 순서대로 노출됩니다.) -->
+    <div style="height: 105px !important; display: block !important; width: 100% !important; clear: both !important;"></div>
+
+    <!-- 2. 대분류 카테고리 탭 구역 (완전 단독 노출) -->
+    <div style="width: 100% !important; display: flex !important; justify-content: center !important; margin-bottom: 25px !important; box-sizing: border-box !important; position: relative !important; z-index: 100 !important; clear: both !important;">
+        <div style="display: flex !important; background: #f8f9fa !important; padding: 6px !important; border-radius: 30px !important; width: 100% !important; max-width: 500px !important; border: 1px solid #eef2f6 !important; box-shadow: 0 4px 10px rgba(0,0,0,0.03) !important;">
+            <div class="tab-link active" data-tab="tab-1" style="flex: 1 !important; text-align: center !important; padding: 12px 0 !important; cursor: pointer !important; font-size: 15px !important; font-weight: bold !important; border-radius: 25px !important; white-space: nowrap !important; background-color: #ff3a5a; color: #ffffff;">전체</div>
+            <div class="tab-link" data-tab="tab-2" style="flex: 1 !important; text-align: center !important; padding: 12px 0 !important; cursor: pointer !important; font-size: 15px !important; font-weight: bold !important; border-radius: 25px !important; white-space: nowrap !important; color: #555555 !important;">모임/스터디</div>
+            <div class="tab-link" data-tab="tab-3" style="flex: 1 !important; text-align: center !important; padding: 12px 0 !important; cursor: pointer !important; font-size: 15px !important; font-weight: bold !important; border-radius: 25px !important; white-space: nowrap !important; color: #555555 !important;">연습/촬영</div>
+        </div>
+    </div>
+	
+    <!-- 3. 세부 아이콘 메뉴 박스 구역 (완전 단독 노출) -->
+    <div style="max-width: 1200px !important; width: 95% !important; margin: 0 auto 30px auto !important; background-color: #ffffff !important; border: 1px solid #eef2f6 !important; border-radius: 16px !important; padding: 25px 40px !important; box-shadow: 0 4px 20px rgba(0, 0, 0, 0.02) !important; box-sizing: border-box !important; position: relative !important; z-index: 95 !important; clear: both !important;">
+        <!-- 전체보기 탭 내용 -->
+        <div id="tab-1" class="tab-content" style="border: none !important; background: none !important; padding: 0 !important; display: block;">
+            <ul style="display: flex !important; justify-content: center !important; gap: 60px !important; list-style: none !important; padding: 0 !important; margin: 0 !important; text-align: center !important;">
+                <li><a href="/?category=all" style="text-decoration: none !important; color: #333333 !important;"><span class="material-icons-two-tone" style="font-size: 42px !important; color: #ff3a5a !important;">apps</span><br><span style="font-size: 14px !important; font-weight: 600 !important; display: inline-block !important; margin-top: 8px !important;">전체보기</span></a></li>
+                <li><a href="/?category=파티룸" style="text-decoration: none !important; color: #333333 !important;"><span class="material-icons-two-tone" style="font-size: 42px !important; color: #ff3a5a !important;">celebration</span><br><span style="font-size: 14px !important; font-weight: 600 !important; display: inline-block !important; margin-top: 8px !important;">파티룸</span></a></li>
+                <li><a href="/?category=스터디룸" style="text-decoration: none !important; color: #333333 !important;"><span class="material-icons-two-tone" style="font-size: 42px !important; color: #ff3a5a !important;">edit</span><br><span style="font-size: 14px !important; font-weight: 600 !important; display: inline-block !important; margin-top: 8px !important;">스터디룸</span></a></li>  
+                <li><a href="/?category=회의실" style="text-decoration: none !important; color: #333333 !important;"><span class="material-icons-two-tone" style="font-size: 42px !important; color: #ff3a5a !important;">settings_voice</span><br><span style="font-size: 14px !important; font-weight: 600 !important; display: inline-block !important; margin-top: 8px !important;">회의실</span></a></li>
+            </ul>
+        </div>
+        <!-- 모임/스터디 탭 내용 -->
+        <div id="tab-2" class="tab-content" style="border: none !important; background: none !important; padding: 0 !important; display: none;">
+            <ul style="display: flex !important; justify-content: center !important; gap: 60px !important; list-style: none !important; padding: 0 !important; margin: 0 !important; text-align: center !important;">
+                <li><a href="/?category=파티룸" style="text-decoration: none !important; color: #333333 !important;"><span class="material-icons-two-tone" style="font-size: 42px !important; color: #ff3a5a !important;">celebration</span><br><span style="font-size: 14px !important; font-weight: 600 !important; display: inline-block !important; margin-top: 8px !important;">파티룸</span></a></li>
+                <li><a href="/?category=스터디룸" style="text-decoration: none !important; color: #333333 !important;"><span class="material-icons-two-tone" style="font-size: 42px !important; color: #ff3a5a !important;">edit</span><br><span style="font-size: 14px !important; font-weight: 600 !important; display: inline-block !important; margin-top: 8px !important;">스터디룸</span></a></li>
+            </ul>
+        </div>
+        <!-- 연습/촬영 탭 내용 -->
+        <div id="tab-3" class="tab-content" style="border: none !important; background: none !important; padding: 0 !important; display: none;">
+            <ul style="display: flex !important; justify-content: center !important; gap: 60px !important; list-style: none !important; padding: 0 !important; margin: 0 !important; text-align: center !important;">
+                <li><a href="/?category=연습실" style="text-decoration: none !important; color: #333333 !important;"><span class="material-icons-two-tone" style="font-size: 42px !important; color: #ff3a5a !important;">settings_voice</span><br><span style="font-size: 14px !important; font-weight: 600 !important; display: inline-block !important; margin-top: 8px !important;">연습실</span></a></li>
+                <li><a href="/?category=촬영스튜디오" style="text-decoration: none !important; color: #333333 !important;"><span class="material-icons-two-tone" style="font-size: 42px !important; color: #ff3a5a !important;">photo_camera</span><br><span style="font-size: 14px !important; font-weight: 600 !important; display: inline-block !important; margin-top: 8px !important;">촬영스튜디오</span></a></li>
+            </ul>
+        </div>
+    </div>
+
+    <!-- 4. 메인 비즈니스 본문 구역 (static 강제화 및 마진 상쇄 처리) -->
+    <div style="position: static !important; display: block !important; width: 100% !important; margin-top: 30px !important; clear: both !important; float: none !important;">
+        <div style="max-width: 1200px !important; margin: 0 auto !important; padding: 0 20px !important; box-sizing: border-box !important;">
+            <p style="font-size: 22px !important; font-weight: bold !important; color: #222222 !important; margin-bottom: 25px !important;">새로 등록됐어요</p>
+            
+		    <div style="display: grid; grid-template-columns: repeat(4, 1fr); gap: 20px;">
+			    <div th:each="space : ${spaceList}" style="border: 1px solid #eee; border-radius: 8px; overflow: hidden; background: #fff; box-shadow: 0 2px 8px rgba(0,0,0,0.02);">
+			        <a th:href="@{/user/space/detail/{id}(id=${space.id})}" style="text-decoration: none; color: inherit;">
+			            <!-- <img th:src="${space.imageUrl != null ? space.imageUrl : '/images/default-space.png'}" style="width: 100%; height: 180px; object-fit: cover;" alt="공간 이미지"> -->
+			            <img th:src="${space.images != null && !space.images.isEmpty() ? space.images[0].imageUrl : '/images/default-space.png'}" 
+						     style="width: 100%; height: 180px; object-fit: cover;" 
+						     alt="공간 이미지">
+			        </a>
+			        <div style="padding: 15px;">
+			            <span th:text="${space.category}" style="font-size: 11px; background: #f4f4f4; color: #666; padding: 3px 8px; border-radius: 4px; font-weight: bold;">카테고리</span>
+			            <h4 style="margin: 10px 0 5px 0; font-size: 16px; font-weight: bold;"><a th:href="@{/user/space/detail/{id}(id=${space.id})}" th:text="${space.name}" style="text-decoration: none; color: #222;">홍대 파티룸</a></h4>
+			            <p th:text="${space.address}" style="font-size: 13px; color: #888; margin: 0 0 10px 0;">서울시 마포구</p>
+			            <div style="font-size: 15px; font-weight: bold; color: #ff3a5a;"><span th:text="${#numbers.formatInteger(space.pricePerHour, 0, 'COMMA')}">15,000</span>원 <span style="font-size: 12px; color: #999; font-weight: normal;">/ 시간</span></div>
+			        </div>
+			    </div> 
+		    </div>
+		
+    		<div th:if="${#lists.isEmpty(spaceList)}" style="text-align: center; padding: 70px 0; color: #bbb; font-size: 15px; font-weight: 500;">등록된 공간이 없습니다.</div>
+    		
+    		<div style="text-align: center !important; margin-top: 50px !important; margin-bottom: 50px !important;">
+			    <a href="/space/list" class="btn-more-custom" style="display: inline-flex !important; align-items: center !important; justify-content: center !important; gap: 8px !important; padding: 14px 40px !important; border: 1px solid #e1e3e5 !important; background-color: #ffffff !important; color: #333333 !important; font-size: 15px !important; font-weight: bold !important; border-radius: 30px !important; text-decoration: none !important;">공간 더보기 <span>▼</span></a>
+			</div>
+        </div>
+        
+        <!-- 5. 리뷰 섹션 -->
+        <div style="max-width: 1200px; margin: 60px auto; padding: 0 20px;" th:if="${!#lists.isEmpty(mainReviewList)}">
+            <h2 style="font-size: 22px; font-weight: bold; color: #222; margin-bottom: 25px;">💬 이용자들이 남긴 생생한 후기</h2>
+            
+            <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 25px;">
+                
+                <th:block th:each="i : ${#numbers.sequence(mainReviewList.size() - 1, 0, -1)}">
+                <div th:with="review=${mainReviewList[i]}" 
+                     th:if="${i >= mainReviewList.size() - 3}"
+                     style="background: #fff; border: 1px solid #eef2f6; border-radius: 16px; overflow: hidden; box-shadow: 0 4px 15px rgba(0,0,0,0.02); display: flex; flex-direction: column;">
+                    <a th:href="@{/review/detail(id=${review.id})}" style="text-decoration: none; color: inherit; display: block; flex: 1;">
+                        
+                        <div style="width: 100%; height: 180px; background-color: #f1f3f5; position: relative; overflow: hidden !important;">
+                            <img th:src="${review.imageUrl != null && review.imageUrl != ''} ? ${review.imageUrl} : '/images/default-space.png'" 
+							     alt="리뷰 포토" 
+							     style="width: 100% !important; height: 100% !important; object-fit: cover !important; display: block !important;">
+                            <!-- <div style="position: absolute; top: 15px; left: 15px; background: rgba(255,58,90,0.9); color: #fff; padding: 4px 10px; border-radius: 20px; font-size: 12px; font-weight: bold; z-index: 10;">
+                                BEST 후기
+                            </div> -->
+                        </div>
+                        
+                        <div style="padding: 20px; line-height: 1.6;">
+                            <div style="color: #ff3a5a; font-weight: bold; font-size: 15px; margin-bottom: 8px;">
+                                ⭐ <span th:text="${review.rating}">5</span>
+                            </div>
+                            <p th:text="${review.content}" style="font-size: 14px; color: #444; margin: 0; height: 66px; overflow: hidden; display: -webkit-box; -webkit-line-clamp: 3; -webkit-box-orient: vertical;">
+                                후기 내용
+                            </p>
+                            <hr style="border: 0; height: 1px; background: #f4f4f4; margin: 15px 0;">
+                            <div style="display: flex; justify-content: space-between; align-items: center; font-size: 12px; color: #999;">
+                                <span>익명회원</span>
+                                <span>이용 완료</span>
+                            </div>
+                        </div>
+                    </a>
+                </div>
+                </th:block>
+                
+            </div>
+            
+            <div style="text-align: center !important; margin-top: 40px !important; margin-bottom: 40px !important;">
+			    <a href="/review/list" class="btn-more-custom" style="display: inline-flex !important; align-items: center !important; gap: 8px !important; padding: 14px 40px !important; border: 1px solid #e1e3e5 !important; border-radius: 30px !important; color: #333 !important; font-weight: bold !important; font-size: 15px !important; text-decoration: none !important;">리뷰 더보기 ▼</a>
+			</div>
+        </div>
+    </div>
+
+    <!-- 6. 하단 푸터 영역 -->
+    <footer style="width: 100% !important; background-color: #111111 !important; color: #a6a6a6 !important; padding: 40px 20px !important; text-align: center !important; box-sizing: border-box !important;">
+        <p style="margin: 0 !important; font-size: 12px;">&copy; 2026 SpaceCloud. All rights reserved.</p>
+    </footer>
+            
+    <!-- 순수 자바스크립트 기반 탭 스위칭 엔진 -->
+    <script>
+        document.addEventListener("DOMContentLoaded", function() {
+            var tabs = document.querySelectorAll('.tab-link');
+            var contents = document.querySelectorAll('.tab-content');
+
+            tabs.forEach(function(tab) {
+                tab.addEventListener('click', function() {
+                    var target = this.getAttribute('data-tab');
+
+                    tabs.forEach(function(t) {
+                        t.classList.remove('active');
+                        t.style.background = 'none';
+                        t.style.color = '#555555';
+                    });
+
+                    contents.forEach(function(c) {
+                        c.style.display = 'none';
+                    });
+
+                    this.classList.add('active');
+                    this.style.background = '#ff3a5a';
+                    this.style.color = '#ffffff';
+
+                    var targetContent = document.getElementById(target);
+                    if (targetContent) {
+                        targetContent.style.display = 'block';
+                    }
+                });
+            });
+        });
+    </script>
+</body>
+</html>

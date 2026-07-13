@@ -1,0 +1,267 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>마이페이지 - SpaceCloud</title>
+    <link href="/css/main.css" rel="stylesheet">
+    <link href="/css/app.css" rel="stylesheet">
+    <link href="/css/total.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons|Material+Icons+Sharp" rel="stylesheet">	
+</head>
+<body style="display: flex !important; flex-direction: column !important; min-height: 100vh !important; margin: 0 !important; padding: 0 !important; background-color: #f8f9fa !important; font-family: 'Malgun Gothic', sans-serif !important;">
+
+    <div style="width: 100% !important; background-color: #ffffff !important; border-bottom: 1px solid #eef2f6 !important; position: fixed !important; top: 0 !important; left: 0 !important; z-index: 9999 !important; box-shadow: 0 2px 10px rgba(0,0,0,0.02) !important;">
+        <div style="max-width: 1200px !important; margin: 0 auto !important; display: flex !important; justify-content: space-between !important; align-items: center !important; height: 70px !important; padding: 0 20px !important; box-sizing: border-box !important;">
+            <div style="display: flex !important; align-items: center !important; gap: 40px !important;">
+                <a href="/" style="font-size: 22px !important; font-weight: 800 !important; color: #ff3a5a !important; text-decoration: none !important; letter-spacing: -0.5px !important;">SpaceCloud</a>
+                <div style="display: flex !important; gap: 25px !important; align-items: center !important;">
+                    <a href="/" style="text-decoration: none !important; color: #333333 !important; font-weight: 600 !important; font-size: 15px !important;">Home</a>
+                    <a href="/qna" style="text-decoration: none !important; color: #333333 !important; font-weight: 600 !important; font-size: 15px !important;">Q&A 게시판</a>
+                </div>
+            </div>
+            <div style="display: flex !important; align-items: center !important; gap: 20px !important; font-size: 14px !important;">
+                <span style="font-weight: 700 !important; color: #333333 !important;" th:text="${session.loginUser.name} + '님 환영합니다!'">유저님 환영합니다!</span>
+                <a href="/user/logout" style="text-decoration: none !important; color: #ff3a5a !important; font-weight: 700 !important; margin-left: 10px;">로그아웃</a>
+            </div>
+        </div>
+    </div>
+
+    <div style="height: 70px !important; width: 100% !important; display: block !important;"></div>
+
+    <main style="flex: 1 !important; max-width: 1200px !important; width: 100% !important; margin: 40px auto !important; padding: 0 20px; box-sizing: border-box !important; display: flex !important; gap: 30px !important;">
+        
+        <aside style="width: 250px !important; flex-shrink: 0 !important; background-color: #ffffff !important; border: 1px solid #eef2f6 !important; border-radius: 16px !important; padding: 25px 15px !important; box-shadow: 0 4px 15px rgba(0,0,0,0.01) !important; height: fit-content !important;">
+            <div style="padding: 0 10px 20px 10px; border-bottom: 1px solid #f4f6f8; margin-bottom: 15px;">
+                <h3 style="margin: 0; font-size: 18px; font-weight: bold; color: #222;">마이페이지</h3>
+                <p style="margin: 5px 0 0 0; font-size: 12px; color: #999;" th:text="${session.loginUser.loginId}">user01</p>
+            </div>
+            
+            <ul style="list-style: none; padding: 0; margin: 0; display: flex; flex-direction: column; gap: 8px;">
+                <li><button class="menu-tab-link active" data-tab="pane-reservation" style="width: 100%; text-align: left; background: none; border: none; padding: 12px 15px; border-radius: 8px; font-size: 14px; font-weight: bold; cursor: pointer; display: flex; align-items: center; gap: 10px;"><span class="material-icons-sharp" style="font-size: 18px;">calendar_today</span> 예약 내역</button></li>
+                <li><button class="menu-tab-link" data-tab="pane-review" style="width: 100%; text-align: left; background: none; border: none; padding: 12px 15px; border-radius: 8px; font-size: 14px; font-weight: bold; cursor: pointer; display: flex; align-items: center; gap: 10px;"><span class="material-icons-sharp" style="font-size: 18px;">rate_review</span> 내가 쓴 후기</button></li>
+                <li><button class="menu-tab-link" data-tab="pane-qna" style="width: 100%; text-align: left; background: none; border: none; padding: 12px 15px; border-radius: 8px; font-size: 14px; font-weight: bold; cursor: pointer; display: flex; align-items: center; gap: 10px;"><span class="material-icons-sharp" style="font-size: 18px;">help_outline</span> 내가 쓴 Q&A</button></li>
+                <li><button class="menu-tab-link" data-tab="pane-profile" style="width: 100%; text-align: left; background: none; border: none; padding: 12px 15px; border-radius: 8px; font-size: 14px; font-weight: bold; cursor: pointer; display: flex; align-items: center; gap: 10px;"><span class="material-icons-sharp" style="font-size: 18px;">manage_accounts</span> 개인정보 수정</button></li>
+            </ul>
+        </aside>
+
+        <section style="flex: 1 !important; display: flex !important; flex-direction: column !important; gap: 25px !important;">
+            
+            <div id="pane-reservation" class="menu-tab-content" style="background-color: #ffffff; border: 1px solid #eef2f6; border-radius: 16px; padding: 30px; box-shadow: 0 4px 15px rgba(0,0,0,0.01);">
+                <h3 style="margin: 0 0 20px 0; font-size: 18px; font-weight: bold; color: #222;">🗓️ 나의 예약 내역</h3>
+                
+                <table style="width: 100%; border-collapse: collapse; font-size: 14px; text-align: left;">
+                    <thead>
+                        <tr style="background-color: #fafbfc; border-bottom: 1px solid #eee;">
+                            <th style="padding: 12px 10px; font-weight: bold; color: #666;">예약번호</th>
+                            <th style="padding: 12px 10px; font-weight: bold; color: #666;">공간</th>
+                            <th style="padding: 12px 10px; font-weight: bold; color: #666;">이용 일시</th>
+                            <th style="padding: 12px 10px; font-weight: bold; color: #666;">금액</th>
+                            <th style="padding: 12px 10px; font-weight: bold; color: #666;">상태</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr th:each="res : ${reservationList}" style="border-bottom: 1px solid #f4f6f8;">
+                            <td style="padding: 15px 10px; color: #888;" th:text="${res.id}">10023</td>
+                            <td style="padding: 15px 10px; font-weight: bold; color: #333;" 
+                                th:text="${spaceNameMap[res.spaceId] != null ? spaceNameMap[res.spaceId] : '알 수 없는 공간'}">홍대 파티룸</td>
+	                        <td style="padding: 15px 10px;">
+							    <!-- 🟢 예약 날짜 출력 -->
+							    <span th:text="${res?.reserveDate}">2026-07-10</span>
+							    <br/>
+							    
+							    <!-- 🟢 자바가 완벽하게 정돈한 '시작시 ~ 종료시 (이용시간)' 직통 출력 -->
+							    <strong th:text="${res?.getFormattedUsageTime()}" style="color: #333;">12시 ~ 15시 (3시간)</strong>
+							</td>
+                            <td style="padding: 15px 10px; font-weight: bold; color: #ff3a5a;"><span th:text="${res?.price != null ? res.price : '0원'}">45,000원</span></td>
+                            <td style="padding: 15px 10px; vertical-align: middle; background: transparent !important;">
+							    <!-- 1️⃣ [취소 완료 건] 상태가 '취소 완료'인 경우는 날짜 상관없이 무조건 취소완료 표시 -->
+							    <span th:if="${res?.status == '취소 완료'}" 
+							          style="background: #f3f4f6; color: #9ca3af; padding: 4px 10px; border-radius: 6px; font-size: 13px; font-weight: bold; display: inline-block;">
+							          취소완료
+							    </span>
+							    
+							    <!-- 2️⃣ [후기 작성 완료 건] 상태가 '후기 작성 완료'인 경우도 무조건 작성완료 표시 -->
+							    <span th:if="${res?.status == '후기 작성 완료'}" 
+							          style="background: #f1f3f5; color: #888; padding: 4px 10px; border-radius: 6px; font-size: 13px; font-weight: bold; display: inline-block;">
+							          작성완료
+							    </span>
+							
+							    <!-- 3️⃣ [정상 예약 건 분기 처리] 상태가 '취소 완료'나 '후기 작성 완료'가 아닐 때만 날짜를 비교합니다 -->
+							    <th:block th:if="${res?.status != '취소 완료' && res?.status != '후기 작성 완료'}">
+							        
+							        <!-- 🟢 A. [이용 예정] 예약일이 오늘(현재 시간)보다 미래이거나 같을 때 ➡️ '예약취소' 버튼 노출 -->
+							        <div th:if="${res?.reserveDate >= #strings.substring(#temporals.createNow().toString(), 0, 10)}" 
+							             style="display: inline-flex; align-items: center; gap: 8px; background: transparent !important; padding: 0 !important; margin: 0 !important;">
+							            <span style="background: #eef9f2; color: #10b981; padding: 4px 10px; border-radius: 6px; font-size: 13px; font-weight: bold; display: inline-block;">
+							                예약완료
+							            </span>
+							            <form th:action="@{/reservation/cancel}" method="post" onsubmit="return confirm('정말 예약을 취소하시겠습니까?');" 
+							                  style="margin: 0 !important; padding: 0 !important; display: inline-block; background: transparent !important;">
+							                <input type="hidden" name="id" th:value="${res.id}" />
+							                <button type="submit" 
+							                        style="background-color: #fff5f5; 
+							                               border: 1px solid #ffa8a8; 
+							                               color: #e03131; 
+							                               padding: 4px 10px; 
+							                               border-radius: 6px; 
+							                               font-size: 12px; 
+							                               font-weight: 600; 
+							                               cursor: pointer; 
+							                               transition: all 0.15s ease-in-out;"
+							                        onmouseover="this.style.backgroundColor='#ffe3e3';"
+							                        onmouseout="this.style.backgroundColor='#fff5f5';">
+							                    예약취소
+							                </button>
+							            </form>
+							        </div>
+							        
+							        <!-- 🟢 B. [이용 완료] 예약일이 오늘보다 과거(지났을 때) ➡️ '후기 작성하기' 버튼으로 강제 자동 전환! -->
+							       <div th:if="${res?.reserveDate < #strings.substring(#temporals.createNow().toString(), 0, 10)}"
+							             style="display: inline-flex; align-items: center; gap: 8px; background: transparent !important; padding: 0 !important; margin: 0 !important;">
+							            
+							            <!-- 왼쪽 부근에 들어가는 정갈한 이용완료 배지 (세련된 차콜 그레이 톤) -->
+							            <span style="background: #f1f3f5; color: #495057; padding: 4px 10px; border-radius: 6px; font-size: 13px; font-weight: bold; display: inline-block;">
+							                이용완료
+							            </span>
+							            
+							            <!-- 우측의 후기 작성하기 버튼 -->
+							            <a th:href="@{/review/write(resId=${res.id}, spaceId=${res.spaceId})}" 
+							               style="background: #ff3a5a; color: #ffffff; text-decoration: none; padding: 5px 12px; border-radius: 6px; font-size: 13px; font-weight: bold; display: inline-block; transition: background 0.2s;"
+							               onmouseover="this.style.backgroundColor='#e02443';"
+							               onmouseout="this.style.backgroundColor='#ff3a5a';">
+							               후기 작성하기
+							            </a>
+							        </div>
+							        
+							    </th:block>
+							</td>
+								 
+                        </tr>
+                        <tr th:if="${#lists.isEmpty(reservationList)}">
+                            <td colspan="5" style="text-align: center; padding: 40px 0; color: #bbb;">최근 예약하신 내역이 존재하지 않습니다.</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <div id="pane-review" class="menu-tab-content" style="background-color: #ffffff; border: 1px solid #eef2f6; border-radius: 16px; padding: 30px; box-shadow: 0 4px 15px rgba(0,0,0,0.01); display: none;">
+                <h3 style="margin: 0 0 20px 0; font-size: 18px; font-weight: bold; color: #222;">💬 내가 남긴 이용 후기</h3>
+                
+                <div style="display: flex; flex-direction: column; gap: 15px;">
+                    <div th:each="rev : ${myReviewList}" style="border: 1px solid #f1f3f5; border-radius: 12px; padding: 20px;">
+                        <div style="color: #ff3a5a; font-weight: bold; font-size: 14px; margin-bottom: 5px;">
+                            ⭐ <span th:text="${rev.rating}">5</span>
+                        </div>
+                        <p style="font-size: 14px; margin: 0 0 10px 0; line-height: 1.5;">
+                            <a th:href="@{/review/detail(id=${rev.id})}" th:text="${rev.content}" style="text-decoration: none; color: #444; font-weight: bold; cursor: pointer;">리뷰 내용 구역</a>
+                        </p>
+                        <div style="font-size: 12px; color: #999; display: flex; justify-content: space-between; align-items: center;">
+                            <span th:text="'공간 번호: ' + ${rev.spaceId}">공간 ID</span>
+                            <a th:href="@{/review/detail(id=${rev.id})}" style="color: #ff3a5a; text-decoration: none; font-weight: bold;">상세보기 &gt;</a>
+                        </div>
+                    </div>
+                    <div th:if="${#lists.isEmpty(myReviewList)}" style="text-align: center; padding: 30px 0; color: #bbb; font-size: 14px;">
+                        작성하신 이용 후기가 존재하지 않습니다.
+                    </div>
+                </div>
+            </div>
+
+            <div id="pane-qna" class="menu-tab-content" style="background-color: #ffffff; border: 1px solid #eef2f6; border-radius: 16px; padding: 30px; box-shadow: 0 4px 15px rgba(0,0,0,0.01); display: none;">
+                <h3 style="margin: 0 0 20px 0; font-size: 18px; font-weight: bold; color: #222;">❓ 내가 문의한 Q&A 내역</h3>
+                
+                <div style="display: flex; flex-direction: column; gap: 15px;">
+                    <div th:each="qna : ${myQnaList}" style="border: 1px solid #f1f3f5; border-radius: 12px; padding: 20px;">
+                        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px;">
+                            <a th:href="@{/qna/detail(id=${qna.id})}" th:text="${qna.title}" style="font-weight: bold; color: #222; font-size: 15px; text-decoration: none; cursor: pointer;">문의 제목이 나옵니다.</a>
+                            <span style="background: #f4f4f4; color: #888; padding: 2px 6px; border-radius: 4px; font-size: 11px; font-weight: bold;">문의완료</span>
+                        </div>
+                        <p th:text="${qna.content}" style="font-size: 14px; color: #555; margin: 0; line-height: 1.5;">문의 상세 내용 구역입니다.</p>
+                    </div>
+                    <div th:if="${#lists.isEmpty(myQnaList)}" style="text-align: center; padding: 30px 0; color: #bbb; font-size: 14px;">
+                        문의하신 Q&A 내역이 존재하지 않습니다.
+                    </div>
+                </div>
+            </div>
+
+            <<div id="pane-profile" class="menu-tab-content" style="background-color: #ffffff; border: 1px solid #eef2f6; border-radius: 16px; padding: 40px; box-shadow: 0 4px 15px rgba(0,0,0,0.01); display: none;">
+    <h3 style="margin: 0 0 25px 0; font-size: 20px; font-weight: bold; color: #222; text-align: center;">🔒 개인정보 변경</h3>
+    
+    <form action="/user/update-profile" method="post" style="max-width: 500px; margin: 0 auto; display: flex; flex-direction: column; gap: 20px;">
+        
+        <div>
+            <label style="font-size: 14px; font-weight: bold; color: #444; display: block; margin-bottom: 8px;">아이디</label>
+            <input type="text" th:value="${session.loginUser?.loginId}" readonly 
+                   style="width: 100%; height: 45px; padding: 0 12px; border: 1px solid #ced4da; background-color: #f1f3f5; border-radius: 8px; box-sizing: border-box; font-size: 15px; color: #888; font-weight: bold;">
+        </div>
+        
+        <div>
+            <label style="font-size: 14px; font-weight: bold; color: #444; display: block; margin-bottom: 8px;">새 비밀번호</label>
+            <input type="password" name="newPassword" placeholder="변경할 새 비밀번호를 입력하세요" 
+                   style="width: 100%; height: 45px; padding: 0 12px; border: 1px solid #ced4da; border-radius: 8px; box-sizing: border-box; font-size: 15px;">
+        </div>
+        
+        <div>
+            <label style="font-size: 14px; font-weight: bold; color: #444; display: block; margin-bottom: 8px;">이름</label>
+            <input type="text" name="name" th:value="${session.loginUser?.name}" required
+                   style="width: 100%; height: 45px; padding: 0 12px; border: 1px solid #ced4da; border-radius: 8px; box-sizing: border-box; font-size: 15px;">
+        </div>
+        
+        <div>
+            <label style="font-size: 14px; font-weight: bold; color: #444; display: block; margin-bottom: 8px;">이메일</label>
+            <input type="email" name="email" th:value="${session.loginUser?.email}" required
+                   style="width: 100%; height: 45px; padding: 0 12px; border: 1px solid #ced4da; border-radius: 8px; box-sizing: border-box; font-size: 15px;">
+        </div>
+        
+        <div>
+            <label style="font-size: 14px; font-weight: bold; color: #444; display: block; margin-bottom: 8px;">주소</label>
+            <input type="text" name="address" th:value="${session.loginUser?.address}" placeholder="기본 주소" 
+                   style="width: 100%; height: 45px; padding: 0 12px; border: 1px solid #ced4da; border-radius: 8px; box-sizing: border-box;">
+        </div>
+        
+        <button type="submit" style="width: 100%; height: 50px; background-color: #ff3a5a; color: #ffffff; border: none; border-radius: 8px; font-size: 16px; font-weight: bold; cursor: pointer; margin-top: 10px; transition: background 0.2s;">
+            회원정보 수정 저장
+        </button>
+    </form>
+</div>
+
+        </section>
+    </main>
+
+    <footer style="width: 100% !important; background-color: #111111 !important; color: #a6a6a6 !important; padding: 30px 20px !important; text-align: center !important;">
+        <div style="max-width: 1200px !important; margin: 0 auto !important; font-size: 12px !important;">
+            <p style="margin: 0 !important;">&copy; 2026 SpaceCloud. All rights reserved.</p>
+        </div>
+    </footer>
+
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script>
+        $(document).ready(function(){
+            $('.menu-tab-link').click(function(){
+                var pane_id = $(this).attr('data-tab');
+                
+                // 기존 활성화 해제 스타일링 초기화
+                $('.menu-tab-link').removeClass('active').css({
+                    'background': 'none',
+                    'color': '#555555'
+                });
+                
+                // 클릭한 본인 버튼 붉은색 활성화
+                $(this).addClass('active').css({
+                    'background': '#ff3a5a',
+                    'color': '#ffffff'
+                });
+                
+                // 탭 콘텐츠 싹 다 숨겼다가 타겟 패널 아이디만 오픈!
+                $('.menu-tab-content').css('display', 'none');
+                $("#" + pane_id).css('display', 'block');
+            });
+            
+            // 초기 첫 로딩 진입 시 예약내역 탭 고정
+            $('.menu-tab-link').first().css({
+                'background': '#ff3a5a',
+                'color': '#ffffff'
+            });
+        });
+    </script>
+</body>
+</html>
