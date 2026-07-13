@@ -36,3 +36,8 @@ dependencies {
 tasks.named('test') {
 	useJUnitPlatform()
 }
+
+bootJar{
+	mainClass = 'com.spacecloud.space.SpaceApplication'
+	}
+	
