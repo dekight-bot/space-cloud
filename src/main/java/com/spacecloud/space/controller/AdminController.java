@@ -132,7 +132,7 @@ public class AdminController {
 		space.setCategory(category);
 		space.setAddress(address);
 		
-		String uploadDir = "C:/upload/";
+		String uploadDir = "/app/upload/";
 		File folder = new File(uploadDir);
 		
 		if (!folder.exists()) folder.mkdirs();
