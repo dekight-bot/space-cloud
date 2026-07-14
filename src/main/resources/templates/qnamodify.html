@@ -31,7 +31,7 @@
         <h1><a th:href="@{/qna}">QnA 게시판 - 글 수정</a></h1>
     </div>
 
-    <form action="/qna/modify" method="post" class="card-writeQna" th:if="${qna != null}">
+    <form    th:action="@{/qna/modify}" method="post" class="card-writeQna" th:if="${qna != null}">
         
         <input type="hidden" name="id" th:value="${qna.id}">
 
