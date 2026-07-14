@@ -262,15 +262,17 @@ body {
             아직 등록된 답변이 없습니다. 빠른 시일 내에 답변을 드리겠습니다.
         </p>
 
-        <form action="/qna/reply/write" method="post" class="reply-form-group">
-            <input type="hidden" name="qnaId" th:value="${qna.id}">
-            
-            <textarea name="content" class="reply-textarea" placeholder="답변 내용을 입력해 주세요. (관리자 전용)" required></textarea>
-            
-            <div class="reply-submit-area">
-                <button type="submit" class="btn-reply">답변 등록</button>
-            </div>
-        </form>
+       <div th:if="${session.loginUser != null && session.loginUser.role == 'ADMIN'}">
+	        <form action="/qna/reply/write" method="post" class="reply-form-group">
+	            <input type="hidden" name="qnaId" th:value="${qna.id}">
+	            
+	            <textarea name="content" class="reply-textarea" placeholder="답변 내용을 입력해 주세요. (관리자 전용)" required></textarea>
+	            
+	            <div class="reply-submit-area">
+	                <button type="submit" class="btn-reply">답변 등록</button>
+	            </div>
+	        </form>
+	    </div>
     </div>
 
 </div>

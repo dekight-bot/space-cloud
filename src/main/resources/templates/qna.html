@@ -163,9 +163,14 @@
                     <tr th:each="qna : ${list}">
                         <td style="text-align: center !important; font-weight: bold; color: #888;" th:text="${qna.id}">5</td>
                         <td style="text-align: left !important; padding-left: 20px !important;">
-                            <a th:href="@{/qna/detail/{id}(id=${qna.id})}" th:text="${qna.title}" style="text-decoration: none !important; color: #222222 !important; font-weight: 600 !important;">제목</a>
-                            <span class="badge-wait">답변대기</span>
-                        </td>
+						    <a th:href="@{/qna/detail/{id}(id=${qna.id})}" th:text="${qna.title}" style="text-decoration: none !important; color: #222222 !important; font-weight: 600 !important;">제목</a>
+						    
+						    <!-- 답변이 없으면 "답변대기" 표시 -->
+						    <span class="badge-wait" th:if="${#lists.isEmpty(qna.replies)}">답변대기</span>
+						    
+						    <!-- 답변이 있으면 "답변완료" 표시 -->
+						    <span class="badge-complete" th:if="${not #lists.isEmpty(qna.replies)}" style="color: #28a745;">답변완료</span>
+						</td>
                         <td style="text-align: center !important; color: #666;" th:text="${qna.category != null ? qna.category : '기타'}">기타</td>
                         
                         <!-- DB 필드명인 qna.createAt 매핑 반영 -->

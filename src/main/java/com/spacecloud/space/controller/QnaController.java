@@ -97,7 +97,6 @@ public class QnaController {
         return "redirect:/user/reservation-list";
     }
     
-    // 🟢 [버그 수리] 깔끔한 주소로 연동 완료 (/qna/detail/7 주소와 완벽하게 대칭)
     @GetMapping("/detail/{id}")
     public String qnaDetailPage(@PathVariable("id") Long id, Model model) {
         
@@ -140,8 +139,16 @@ public class QnaController {
     
     // 답변 처리
     @PostMapping("/reply/write")
-    public String qnaReplyWrite(@RequestParam("qnaId") Long qnaId, @ModelAttribute QnaReply qnaReply, Model model) {
-        qnaReplyService.saveReply(qnaId, qnaReply);
+    public String qnaReplyWrite(@RequestParam("qnaId") Long qnaId, @ModelAttribute QnaReply qnaReply, Model model, HttpSession session) {
+        
+    	User loginUser = (User) session.getAttribute("loginUser");
+    	
+    	if(loginUser == null || !"ADMIN".equals(loginUser.getRole())) {
+    		
+    		return "redirect:/access-denied";
+    	}
+    	
+    	qnaReplyService.saveReply(qnaId, qnaReply);
         List<QnaReply> replies = qnaReplyService.getRepliesQnaId(qnaId);
         model.addAttribute("replies", replies);
         return "redirect:/qna/detail/" + qnaId; // 🟢 주소 규칙 통일
