@@ -65,17 +65,36 @@ public class MainController {
 	
 	
 	@GetMapping("/space/search")
-    public String searchSpaces(@RequestParam(value = "keyword", required = false) String keyword, Model model) {
+    public String searchSpaces(@RequestParam(value = "keyword", required = false) String keyword,
+    												@RequestParam(value = "category", required = false) String category, Model model) {
         
-        // 1. 공간 검색 결과 배달
-        List<Space> searchResult = spaceService.searchSpaces(keyword);
-        model.addAttribute("spaceList", searchResult);
-        model.addAttribute("selectedCategory", "검색어: " + keyword);
+		List<Space> list;
+		
+		System.out.println("전달받은 검색어: " + keyword);
+	    
+	    List<Space> spaceList = spaceService.searchSpaces(keyword);
+	    
+	    // 결과 확인!
+	    System.out.println("검색된 공간 개수: " + (spaceList != null ? spaceList.size() : "null"));
+		
+		if(keyword != null && !keyword.isEmpty()) {
+			
+			list = spaceService.searchSpaces(keyword);
+			model.addAttribute("selectedCategory", "검색어 : " + keyword);
+		}else if(category != null && !category.isEmpty()){
+			list = spaceService.findByCategory(category);
+			model.addAttribute("selectedCategory", category);
+		}else {
+			list = spaceService.getAllSpace();
+			model.addAttribute("selectedCategory", "all");
+		}
+	
+        model.addAttribute("spaceList", list);
         
-        
+        // 리뷰 리스트도 그대로 유지
         List<Review> mainReviewList = reviewService.getAllReview(); 
         model.addAttribute("mainReviewList", mainReviewList);
         
-        return "space-list"; 
+        return "space-list";
     }
 }

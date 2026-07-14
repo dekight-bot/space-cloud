@@ -20,22 +20,25 @@
         <a href="/" style="text-decoration: none; color: #666;">⬅️ 메인으로 돌아가기</a>
         
         <div style="margin: 20px 0; display: flex; gap: 10px;">
-		    <a href="/space/list?category=all" 
+		    <a href="/space/search" 
 		       th:style="'padding: 10px 20px; border-radius: 20px; text-decoration: none; font-weight: bold; ' + (${selectedCategory} == 'all' ? 'background: #ff3a5a; color: white;' : 'background: #eee; color: #666;')">전체보기</a>
 		       
-		    <a href="/space/list?category=파티룸" 
+		    <a href="/space/search?category=파티룸" 
 		       th:style="'padding: 10px 20px; border-radius: 20px; text-decoration: none; font-weight: bold; ' + (${selectedCategory} == '파티룸' ? 'background: #ff3a5a; color: white;' : 'background: #eee; color: #666;')">파티룸</a>
 		       
-		    <a href="/space/list?category=스터디룸" 
+		    <a href="/space/search?category=스터디룸" 
 		       th:style="'padding: 10px 20px; border-radius: 20px; text-decoration: none; font-weight: bold; ' + (${selectedCategory} == '스터디룸' ? 'background: #ff3a5a; color: white;' : 'background: #eee; color: #666;')">스터디룸</a>
 		
-		    <a href="/space/list?category=오피스" 
+		    <a href="/space/search?category=오피스" 
 		       th:style="'padding: 10px 20px; border-radius: 20px; text-decoration: none; font-weight: bold; ' + (${selectedCategory} == '오피스' ? 'background: #ff3a5a; color: white;' : 'background: #eee; color: #666;')">오피스</a>
+		    
+		    <a href="/space/search?category=연습실" 
+		       th:style="'padding: 10px 20px; border-radius: 20px; text-decoration: none; font-weight: bold; ' + (${selectedCategory} == '연습실' ? 'background: #ff3a5a; color: white;' : 'background: #eee; color: #666;')">연습실</a>   
 		</div>
         
         <!-- 🟢 th:each 반복문으로 DB 데이터 출력 -->
         <div class="grid">
-            <a th:each="space : ${spaces}" 
+            <a th:each="space : ${spaceList}" 
                th:href="@{/user/space/detail/{id}(id=${space.id})}" 
                class="card">
                 
@@ -47,7 +50,7 @@
             </a>
             
             <!-- 데이터가 없을 경우 메시지 -->
-            <div th:if="${#lists.isEmpty(spaces)}" style="padding: 20px; color: #999;">
+            <div th:if="${#lists.isEmpty(spaceList)}" style="padding: 20px; color: #999;">
                 해당 카테고리에 등록된 공간이 없습니다.
             </div>
         </div>
