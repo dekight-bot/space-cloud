@@ -111,8 +111,20 @@ public class QnaController {
     }
     
     @PostMapping("/modify")
-    public String qnaModify(@ModelAttribute Qna qna) {
-        qnaService.modify(qna);
+    public String qnaModify(@ModelAttribute Qna qna, HttpSession session) {
+    	User loginUser = (User) session.getAttribute("loginUser");
+    	
+    	if(loginUser == null) {
+    		return "redirect:/user/login";
+    	}
+    	
+    	Qna originQna = qnaService.getById(qna.getId());
+        if (originQna != null && originQna.getUserLoginId().equals(loginUser.getLoginId())) {
+            qnaService.modify(qna);
+        } else {
+            return "redirect:/access-denied"; // 권한 없음 페이지 또는 목록으로
+        }
+        
         return "redirect:/qna/detail/" + qna.getId();
     }
     
