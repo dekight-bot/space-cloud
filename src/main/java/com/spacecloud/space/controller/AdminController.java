@@ -138,16 +138,25 @@ public class AdminController {
 		if (!folder.exists()) folder.mkdirs();
 		
 		for (MultipartFile file : files) {
-	        if (!file.isEmpty()) {
-	            String savedFilename = UUID.randomUUID().toString() + "_" + file.getOriginalFilename();
-	            File saveFile = new File(folder, savedFilename);
-	            file.transferTo(saveFile);
-	            
-	            // 3. SpaceImage 객체 생성 및 리스트에 추가
-	            SpaceImage spaceImage = new SpaceImage("/images/" + savedFilename, space);
-	            space.getImages().add(spaceImage); // 엔티티에 추가
-	        }
-	    }
+		    if (!file.isEmpty()) {
+		        String originalFilename = file.getOriginalFilename();
+		        
+		        // 1. 확장자 추출 (예: .jpg, .png)
+		        String ext = "";
+		        if (originalFilename != null && originalFilename.contains(".")) {
+		            ext = originalFilename.substring(originalFilename.lastIndexOf("."));
+		        }
+		        
+		        // 2. UUID만 사용하여 파일명 생성 (한글 제거)
+		        String savedFilename = UUID.randomUUID().toString() + ext;
+		        
+		        File saveFile = new File(folder, savedFilename);
+		        file.transferTo(saveFile);
+		        
+		        SpaceImage spaceImage = new SpaceImage("/images/" + savedFilename, space);
+		        space.getImages().add(spaceImage);
+		    }
+		}
 		
 		spaceService.saveSpace(space);
 		
@@ -177,7 +186,7 @@ public class AdminController {
 	@GetMapping("/spaces/edit")
 	public String adminSpaceEditForm(@RequestParam(value = "id", required = false) Long id, 
 	                                 HttpSession session, 
-	                                 org.springframework.ui.Model model, 
+	                                 Model model, 
 	                                 RedirectAttributes rttr) {
 		// 🔒 보안 검문
 		User loginUser = (User) session.getAttribute("loginUser");

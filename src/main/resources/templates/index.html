@@ -97,9 +97,9 @@
 			    <div th:each="space : ${spaceList}" style="border: 1px solid #eee; border-radius: 8px; overflow: hidden; background: #fff; box-shadow: 0 2px 8px rgba(0,0,0,0.02);">
 			        <a th:href="@{/user/space/detail/{id}(id=${space.id})}" style="text-decoration: none; color: inherit;">
 			            <!-- <img th:src="${space.imageUrl != null ? space.imageUrl : '/images/default-space.png'}" style="width: 100%; height: 180px; object-fit: cover;" alt="공간 이미지"> -->
-			            <img th:src="${space.images != null && !space.images.isEmpty() ? space.images[0].imageUrl : '/images/default-space.png'}" 
-						     style="width: 100%; height: 180px; object-fit: cover;" 
-						     alt="공간 이미지">
+			            <img th:src="${space != null && space.images != null && !space.images.isEmpty() ? space.images[0].imageUrl : '/images/default-space.png'}" 
+					     style="width: 100%; height: 180px; object-fit: cover; display: block;" 
+					     alt="공간 이미지">
 			        </a>
 			        <div style="padding: 15px;">
 			            <span th:text="${space.category}" style="font-size: 11px; background: #f4f4f4; color: #666; padding: 3px 8px; border-radius: 4px; font-weight: bold;">카테고리</span>
