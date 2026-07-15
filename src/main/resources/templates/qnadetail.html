@@ -225,11 +225,23 @@ body {
             <img th:src="${qna.imageUrl}" alt="QnA 첨부사진" style="max-width: 100%; max-height: 450px; border-radius: 8px; box-shadow: 0 4px 12px rgba(0,0,0,0.06); object-fit: contain;">
         </div>
 
-        <div class="btn-area">
-            <a th:href="@{/qna}" class="btn btn-secondary">목록으로</a>
-            <a th:href="@{/qna/modify(id=${qna.id})}" class="btn btn-success">수정</a>
-            <a th:href="@{/qna/delete(id=${qna.id})}" class="btn btn-danger" onclick="return confirm('정말 이 문의 글을 삭제하시겠습니까?');">삭제</a>
-        </div>
+       <div style="display: flex; justify-content: flex-end; align-items: center; gap: 10px; margin-top: 20px;">
+	    
+		    <!-- 목록으로 -->
+		    <a href="/qna" style="background-color: #6c757d; color: white; padding: 8px 16px; border-radius: 6px; text-decoration: none; font-size: 14px;">목록으로</a>
+		    
+		    <!-- 수정 -->
+		    <a th:href="@{/qna/modify(id=${qna.id})}" style="background-color: #28a745; color: white; padding: 8px 16px; border-radius: 6px; text-decoration: none; font-size: 14px;">수정</a>
+		    
+		    <!-- 삭제 -->
+		   <a th:href="@{/qna/delete/{id}(id=${qna.id})}" 
+			   onclick="return confirm('정말 삭제하시겠습니까?');" 
+			   style="background-color: #dc3545; color: white; padding: 8px 16px; border-radius: 6px; text-decoration: none; font-size: 14px; font-weight: normal;">
+			   삭제하기
+		</a>
+		       
+		</div>
+        
     </div>
 
     <!-- 답변 처리 구역 -->

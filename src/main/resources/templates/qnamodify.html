@@ -31,7 +31,7 @@
         <h1><a th:href="@{/qna}">QnA 게시판 - 글 수정</a></h1>
     </div>
 
-    <form    th:action="@{/qna/modify}" method="post" class="card-writeQna" th:if="${qna != null}">
+    <form    th:action="@{/qna/modify}" method="post" enctype="multipart/form-data" class="card-writeQna" th:if="${qna != null}">
         
         <input type="hidden" name="id" th:value="${qna.id}">
 
@@ -61,6 +61,14 @@
             <label>내용</label>
             <textarea name="content" th:text="${qna.content}" placeholder="내용을 입력하세요" required></textarea>
         </div>
+        
+        <div th:if="${qna.imageUrl != null && qna.imageUrl != ''}">
+	        <p>현재 파일: <img th:src="${qna.imageUrl}" style="width: 100px;"></p>
+	    </div>
+	    <div class="form-group">
+	       	 <label>이미지 변경</label>
+	        <input type="file" name="qnaImage">
+	    </div>
 
         <div class="btn-area">
             <a th:href="@{/qna/detail(id=${qna.id})}" class="btn btn-cancel">취소</a>

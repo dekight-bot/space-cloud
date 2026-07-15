@@ -110,6 +110,15 @@ public class QnaController {
         return "redirect:/qna/detail/" + qnaId;
     }
     
+    @GetMapping("/modify")
+    public String qnaModifyPage(@RequestParam("id") Long id, Model model) {
+    	
+    	Qna qna = qnaService.getById(id);
+    	model.addAttribute("qna", qna);
+    	
+    	return "qnamodify";
+    }
+    
     @PostMapping("/modify")
     public String qnaModify(@ModelAttribute Qna qna, HttpSession session) {
     	User loginUser = (User) session.getAttribute("loginUser");
@@ -146,6 +155,19 @@ public class QnaController {
             model.addAttribute("error", "비밀번호가 일치하지 않습니다.");
             return "qnapassword";
         }
+    }
+    
+    @GetMapping("/delete/{id}")
+    public String deleteQna(@PathVariable("id") Long id, HttpSession session) {
+    	
+    	User loginUser = (User) session.getAttribute("loginUser");
+    	
+    	Qna qna = qnaService.getById(id);
+    	if(loginUser != null && qna != null && qna.getUserLoginId().equals(loginUser.getLoginId())) {
+    			qnaService.delete(id);
+    	}
+    	
+    	return "redirect:/qna";
     }
     
 }
